@@ -5,7 +5,7 @@ TBD: project not defined yet.
 | # | Task | Owner | Branch | Status | PR |
 | --- | --- | --- | --- | --- | --- |
 | T-000 | Workspace setup | CTO | setup/workspace | PASSED | https://github.com/aqeelalbakoush-rgb/cursor_porject/pull/1 |
-| T-002 | Record QA follow-ups from PR #1 | CTO | cto/T-002-qa-followups | UNDER REVIEW | - |
+| T-002 | Record QA follow-ups from PR #1 | CTO | cto/T-002-qa-followups | UNDER REVIEW | https://github.com/aqeelalbakoush-rgb/cursor_porject/pull/2 |
 | T-003 | Clear `qa-passed` when a pull request receives new commits | DevOps Engineer | - | NOT STARTED | - |
 | T-004 | Require `qa-gate` in branch protection and limit who can set `qa-passed` | DevOps Engineer | - | NOT STARTED | - |
 
