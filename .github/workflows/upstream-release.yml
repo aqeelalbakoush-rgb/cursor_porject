@@ -2,6 +2,7 @@ name: Release
 
 # T-005 import: tag-push trigger disabled so this upstream workflow does
 # not publish a release against the WinCafe repository. workflow_dispatch only.
+# T-009: every job is if:false so a manual dispatch still cannot publish.
 on:
   workflow_dispatch:
     inputs:
@@ -46,6 +47,7 @@ concurrency:
 
 jobs:
   create-release:
+    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
@@ -296,7 +298,7 @@ jobs:
   release-linux:
     runs-on: ${{ matrix.runner }}
     needs: create-release
-    if: needs.create-release.outputs.promotion_only != 'true'
+    if: false
     timeout-minutes: 60
     # Each matrix entry builds AppImage + deb + rpm + snap for its host
     # architecture. electron-builder does not cross-compile, so x64 hosts
@@ -487,7 +489,7 @@ jobs:
   release-mac:
     runs-on: macos-15
     needs: create-release
-    if: needs.create-release.outputs.promotion_only != 'true'
+    if: false
     # Was two parallel 60-minute matrix jobs (one per arch); now one job builds,
     # signs, and notarizes both — packaging + notarizing arch #2 no longer
     # overlaps arch #1's wall-clock time, so this needs real headroom over the
@@ -699,7 +701,7 @@ jobs:
   release-windows:
     runs-on: windows-latest
     needs: create-release
-    if: needs.create-release.outputs.promotion_only != 'true'
+    if: false
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -860,7 +862,7 @@ jobs:
     # No release is publishable until every platform job and this independent
     # post-upload verification pass succeeds.
     needs: [create-release, release-linux, release-mac, release-windows]
-    if: needs.create-release.outputs.promotion_only != 'true'
+    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
@@ -968,7 +970,7 @@ jobs:
     # Keep this as a distinct job so publishing cannot happen in a platform
     # job before the other platforms' draft assets have been checked.
     needs: [create-release, release-linux, release-mac, release-windows, verify-release]
-    if: needs.create-release.outputs.promotion_only != 'true' && needs.verify-release.result == 'success'
+    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -1035,7 +1037,7 @@ jobs:
     name: Promote stable release to GitHub Latest
     # Auto-promotes every verified stable release; beta never reaches this job.
     needs: [create-release, verify-release, publish-release]
-    if: needs.create-release.outputs.promotion_only != 'true' && needs.create-release.outputs.channel == 'stable'
+    if: false
     # Shared with promote-release below (not per-ref) so two promotions for
     # different tags can never race and move Latest backward.
     concurrency:
@@ -1103,7 +1105,7 @@ jobs:
     name: Promote a historical release to GitHub Latest
     # Manual re-promotion of an already-published release; new tag pushes use promote-stable instead.
     needs: create-release
-    if: needs.create-release.outputs.promotion_only == 'true'
+    if: false
     # Shared with promote-stable above — see that job's comment.
     concurrency:
       group: promote-to-latest-${{ github.repository }}

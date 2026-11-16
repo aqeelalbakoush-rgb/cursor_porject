@@ -367,6 +367,15 @@ function safeAnonymousDiagnosticProjection(
 export async function sendAnonymousDiagnosticReport(
   report: Record<string, unknown>,
 ): Promise<AnonymousDiagnosticResult> {
+  // Same phone-home gate as sendEventImpl. The collector URL stays in the code.
+  const { phoneHomeEnabled } = require('../../shared/phone-home') as typeof import('../../shared/phone-home');
+  let phoneHomeSetting: string | null = null;
+  try {
+    phoneHomeSetting = getSettingValue('phone_home_enabled');
+  } catch {
+    phoneHomeSetting = null;
+  }
+  if (!phoneHomeEnabled(phoneHomeSetting)) return { disposition: 'network_error' };
   if (
     matrixOffline() ||
     telemetryStopping ||

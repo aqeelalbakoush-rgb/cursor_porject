@@ -212,6 +212,28 @@ async function main() {
       (await sendAnonymousDiagnosticReport({ ...report, unexpected: 'private' })).disposition,
       'invalid_ack',
     );
+
+    const sentBeforeGate = sendCount;
+    delete process.env.FLO_TELEMETRY_DEV;
+    delete process.env.FLO_POSTHOG_DEV;
+    delete process.env.WINCAFE_PHONE_HOME;
+    assert.equal(
+      (await sendAnonymousDiagnosticReport(report)).disposition,
+      'network_error',
+      'phone-home off returns without a collector request',
+    );
+    assert.equal(sendCount, sentBeforeGate, 'phone-home off does not POST the diagnostic report');
+    process.env.WINCAFE_PHONE_HOME = '0';
+    process.env.FLO_TELEMETRY_DEV = '1';
+    assert.equal(
+      (await sendAnonymousDiagnosticReport(report)).disposition,
+      'network_error',
+    );
+    assert.equal(
+      sendCount,
+      sentBeforeGate,
+      'WINCAFE_PHONE_HOME=0 blocks the diagnostic report even when the dev opt-in is set',
+    );
   } finally {
     delete process.env.FLO_TELEMETRY_DEV;
     globalThis.fetch = originalFetch;

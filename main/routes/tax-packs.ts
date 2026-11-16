@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { randomUUID, createHash, type KeyLike } from 'crypto';
 import Decimal from 'decimal.js';
 import { getDatabase, getSettingValue, now, upsertSettings, withTxn } from '../db';
@@ -26,6 +26,23 @@ import { getHttpRequestSignal } from '../shutdown';
 import { getCurrencyFractionDigits } from '../countries';
 
 const router = Router();
+
+function taxFeaturesEnabled(): boolean {
+  const value = getSettingValue('tax_features_enabled');
+  return value === 'true' || value === '1';
+}
+
+router.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
+    next();
+    return;
+  }
+  if (taxFeaturesEnabled()) {
+    next();
+    return;
+  }
+  res.status(403).json({ error: 'Tax features are disabled' });
+});
 const BUNDLED_PACKS_BY_ID = new Map(BUNDLED_COUNTRY_PACKS.map((pack) => [pack.id, pack]));
 // SHA-256 digests of historical unbundled/renamed India and Thailand packs.
 export const LEGACY_TRUSTED_PACK_DIGESTS: Record<string, string> = {

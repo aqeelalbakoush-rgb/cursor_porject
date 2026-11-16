@@ -11184,7 +11184,7 @@ function seedCloudSyncDefaults(): void {
   if (!serverUrl) upsertSetting('cloud_server_url', DEFAULT_CLOUD_SERVER_URL);
 
   // Defaults mirror FloAdmin store defaults; actual transmission is gated on api_key.
-  insertSettingIfMissing('cloud_sync_enabled', '1');
+  insertSettingIfMissing('cloud_sync_enabled', '0');
   insertSettingIfMissing('cloud_orders_enabled', '0');
   insertSettingIfMissing('cloud_reports_enabled', '1');
   insertSettingIfMissing('cloud_command_polling_enabled', '1');
@@ -11250,7 +11250,7 @@ function seedInstallDefaults(): void {
   insert('custom_charges', '[]');
   insert('cloud_server_url', DEFAULT_CLOUD_SERVER_URL);
   insert('cloud_connected', 'false');
-  insert('cloud_sync_enabled', '1');
+  insert('cloud_sync_enabled', '0');
   insert('cloud_orders_enabled', '0');
   insert('cloud_reports_enabled', '1');
   insert('cloud_command_polling_enabled', '1');

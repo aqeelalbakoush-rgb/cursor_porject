@@ -2,6 +2,7 @@ name: Publish Tax Pack
 
 # T-005 import: tag-push trigger disabled so this upstream workflow does
 # not publish a tax pack against the WinCafe repository. workflow_dispatch only.
+# T-009: the job is if:false so a manual dispatch still cannot publish.
 on:
   workflow_dispatch:
 
@@ -14,6 +15,7 @@ concurrency:
 
 jobs:
   sign-and-publish:
+    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

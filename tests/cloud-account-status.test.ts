@@ -167,6 +167,13 @@ async function run() {
       .post('/api/settings/cloud/account/verification')
       .set(owner.authHeader);
     assertEqual(stoppedVerification.status, 409, 'stopped cloud verification is rejected locally');
+    const phoneHomeOffRegister = await request(app)
+      .post('/api/settings/cloud/register')
+      .set(owner.authHeader)
+      .send({});
+    assertEqual(phoneHomeOffRegister.status, 403, 'cloud registration stays local while phone-home is off');
+    assertEqual(upstreamCalls, 0, 'disabled phone-home does not call FloAdmin');
+    setSettings({ phone_home_enabled: 'true' });
     const stoppedRegister = await request(app)
       .post('/api/settings/cloud/register')
       .set(owner.authHeader)

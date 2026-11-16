@@ -173,6 +173,12 @@ function initTestDb() {
   }
   const db = getDatabase();
   seedTestRegionalDefaults(db);
+  // Production leaves tax_features_enabled false. Tests that call the tax
+  // write APIs opt in here; the routes still reject a store that leaves it off.
+  db.prepare(
+    `INSERT INTO settings (key, value) VALUES ('tax_features_enabled', 'true')
+     ON CONFLICT(key) DO UPDATE SET value = excluded.value`,
+  ).run();
   return db;
 }
 
