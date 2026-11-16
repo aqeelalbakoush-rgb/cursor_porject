@@ -112,8 +112,8 @@ async function main() {
   assert.equal(count('printers'), 0, 'fresh install starts with no default printer');
   assert.equal(
     setting('cloud_server_url'),
-    'https://blue.flopos.com/',
-    'cloud server URL is seeded',
+    '',
+    'cloud server URL is seeded empty',
   );
   assert.match(
     setting('cloud_pos_hash') || '',

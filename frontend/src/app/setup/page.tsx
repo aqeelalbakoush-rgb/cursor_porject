@@ -143,8 +143,8 @@ export default function SetupPage() {
   const ownerApprovalPinValid =
     /^\d{4,6}$/.test(ownerApprovalPin) && ownerApprovalPin === ownerApprovalPinConfirm;
 
-  const cloudEnabled = true;
-  const [cloudServerUrl, setCloudServerUrl] = useState(DEFAULT_CLOUD_SERVER_URL);
+  const cloudEnabled = false;
+  const [cloudServerUrl, setCloudServerUrl] = useState('');
 
   const isPasswordValid = validatePassword;
   const passwordMeetsRequirements = form.password.length === 0 || isPasswordValid(form.password);
@@ -380,8 +380,8 @@ export default function SetupPage() {
         master_pin: masterPinAvailable ? masterPin : undefined,
         owner_approval_pin: ownerApprovalPin,
         owner_approval_pin_confirmation: ownerApprovalPinConfirm,
-        cloud_sync_enabled: true,
-        cloud_server_url: cloudServerUrl.trim() || DEFAULT_CLOUD_SERVER_URL,
+        cloud_sync_enabled: false,
+        cloud_server_url: '',
         email_product_updates: productUpdates,
         email_marketing: marketing,
         product_analytics_level: analyticsLevel ?? undefined,

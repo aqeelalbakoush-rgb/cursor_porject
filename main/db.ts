@@ -497,8 +497,6 @@ export function withDatabaseMaintenanceLock<T>(
   });
 }
 
-const DEFAULT_CLOUD_SERVER_URL = 'https://blue.flopos.com/';
-
 function randomSecret(): string {
   return crypto
     .randomBytes(32)
@@ -11181,7 +11179,7 @@ function seedCloudSyncDefaults(): void {
   createCloudSyncSchema();
 
   const serverUrl = getSettingValue('cloud_server_url');
-  if (!serverUrl) upsertSetting('cloud_server_url', DEFAULT_CLOUD_SERVER_URL);
+  if (!serverUrl) upsertSetting('cloud_server_url', '');
 
   // Defaults mirror FloAdmin store defaults; actual transmission is gated on api_key.
   insertSettingIfMissing('cloud_sync_enabled', '0');
@@ -11248,7 +11246,7 @@ function seedInstallDefaults(): void {
   // Unified charges & fees engine: JSON array of ChargeDefinition objects.
   // Validated only by the dedicated /settings/charges endpoints.
   insert('custom_charges', '[]');
-  insert('cloud_server_url', DEFAULT_CLOUD_SERVER_URL);
+  insert('cloud_server_url', '');
   insert('cloud_connected', 'false');
   insert('cloud_sync_enabled', '0');
   insert('cloud_orders_enabled', '0');
