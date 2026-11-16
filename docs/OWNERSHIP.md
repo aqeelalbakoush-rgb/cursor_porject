@@ -12,12 +12,13 @@ One owner per file and area. Edit only paths you own. Ask the CTO to request a c
 | `docs/IMPLEMENTATION_PLAN.md` | CTO | |
 | `docs/TASKS.md` | CTO | |
 | `docs/DECISIONS.md` | CTO | |
-| `.github/` | CTO | |
+| `.github/` | CTO | Except `.github/workflows/` |
+| `.github/workflows/` | DevOps Engineer | CTO reviews. T-000 exception: the CTO added `qa-gate.yml` during workspace setup. Later workflow edits belong to DevOps. |
 | `design/` | UI/UX Designer | |
 | `src/` | Full-Stack Developer | Future |
 | `docs/API.md` | Full-Stack Developer | Future |
 | `tests/` | QA & Security Engineer | Future |
 | `docs/QA_SECURITY_PLAN.md` | QA & Security Engineer | Future |
 | `infra/` | DevOps Engineer | Future |
-| Docker and CI files | DevOps Engineer | Future |
+| Docker and CI files | DevOps Engineer | Future, except `qa-gate.yml` (see `.github/workflows/`) |
 | `docs/DEVOPS_PLAN.md` | DevOps Engineer | Future |
