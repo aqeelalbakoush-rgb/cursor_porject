@@ -36,3 +36,7 @@ No application code is in this repository yet.
 5. Record whether work is implemented, tested, verified, and deployed as separate facts. Deployment, data deletion, and paid services need Aqeel's explicit approval.
 
 Full rules: [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Upstream
+
+The application source in this repository is imported from [FloCafe](https://github.com/FreeOpenSourcePOS/FloCafe). FloCafe is MIT-licensed (see `LICENSE`: Copyright (c) 2025-2026 FloCafe Contributors). The imported commit is `2bac03d52f470ab2897ebe0750167c48e4691ce3` (2026-11-15). The upstream README is preserved at [docs/upstream/FLOCAFE_README.md](docs/upstream/FLOCAFE_README.md). Import notes are in [docs/upstream/IMPORT_NOTES.md](docs/upstream/IMPORT_NOTES.md).
