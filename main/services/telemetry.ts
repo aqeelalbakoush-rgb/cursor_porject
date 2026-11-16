@@ -178,6 +178,15 @@ async function sendEventImpl(
   eventType: string,
   payload?: Record<string, unknown>,
 ): Promise<boolean> {
+  // WinCafe: telemetry.flopos.com stays in the code, but does not run unless phone-home is on.
+  const { phoneHomeEnabled } = require('../../shared/phone-home') as typeof import('../../shared/phone-home');
+  let phoneHomeSetting: string | null = null;
+  try {
+    phoneHomeSetting = getSettingValue('phone_home_enabled');
+  } catch {
+    phoneHomeSetting = null;
+  }
+  if (!phoneHomeEnabled(phoneHomeSetting)) return false;
   if (matrixOffline() || !isTelemetryEnabled()) return false;
 
   try {
@@ -192,7 +201,7 @@ async function sendEventImpl(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         anon_id: anonId,
-        app: 'flocafe',
+        app: 'wincafe',
         app_version: electronApp()?.getVersion?.() ?? '0.0.0',
         event_type: eventType,
         platform: process.platform,
@@ -378,7 +387,7 @@ export async function sendAnonymousDiagnosticReport(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         anon_id: anonId,
-        app: 'flocafe',
+        app: 'wincafe',
         app_version: electronApp()?.getVersion?.() ?? '0.0.0',
         app_build: build,
         event_type: 'diagnostic_counts',

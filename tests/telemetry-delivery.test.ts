@@ -56,7 +56,7 @@ async function main() {
       'USD',
       'telemetry sends the normalized configured currency',
     );
-    assert.equal(requestBody?.app, 'flocafe');
+    assert.equal(requestBody?.app, 'wincafe');
     assert.equal(requestBody?.app_version, '2.7.2-test');
 
     // An unconfirmed country is omitted rather than sent as the install

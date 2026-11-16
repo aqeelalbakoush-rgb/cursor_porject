@@ -289,7 +289,7 @@ test('postpaid: a sessionStorage fallback keeps the retry key across a reload wi
     // A legacy HTTP 500 does not prove the order was rejected, so the result
     // stays unknown and the durable attempt remains available for recovery.
     await expect(page.getByRole('status')).toContainText(
-      'FloCafe could not confirm whether the order or payment was saved.',
+      'WinCafe could not confirm whether the order or payment was saved.',
     );
     await page.getByText('Show exactly what will be sent').click();
     const helpPayload = page.getByRole('main').locator('details pre');

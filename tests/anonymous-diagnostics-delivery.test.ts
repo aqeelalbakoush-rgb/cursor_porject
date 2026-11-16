@@ -72,7 +72,7 @@ async function main() {
     assert.equal((await sendAnonymousDiagnosticReport(report)).disposition, 'accepted');
     assert.equal(sendCount, 1);
     const payload = responseBody as any;
-    assert.equal(payload.app, 'flocafe');
+    assert.equal(payload.app, 'wincafe');
     assert.equal(payload.event_type, 'diagnostic_counts');
     assert.equal(
       payload.app_version,

@@ -3,6 +3,7 @@
 import { isOfflineMode } from './offline-mode';
 import { getSettingValue } from '../db';
 import { isOfficialReleaseBuild, readBuildPostHogSettings } from './build-identity';
+import { phoneHomeEnabled } from '../../shared/phone-home';
 
 export const POSTHOG_PROJECT_TOKEN_SETTING = 'posthog_project_token';
 export const POSTHOG_HOST_SETTING = 'posthog_host';
@@ -43,8 +44,17 @@ export function postHogEnvironment(): PostHogEnvironment | null {
   if (process.env.NODE_ENV === 'test') return null;
   if (process.env.FLO_E2E_SKIP_OPTIONAL_NETWORK === '1') return null;
   if ((process as NodeJS.Process & { type?: string }).type !== 'browser') return null;
+  if (!phoneHomeEnabled(readPhoneHomeSetting())) return null;
   if (process.env.FLO_POSTHOG_DEV === '1') return 'development';
   return isOfficialReleaseBuild() ? 'production' : null;
+}
+
+function readPhoneHomeSetting(): string | null {
+  try {
+    return getSettingValue('phone_home_enabled');
+  } catch {
+    return null;
+  }
 }
 
 export function postHogNetworkSuppressed(): boolean {

@@ -8,7 +8,7 @@ import { getLanguageDirection, getLanguageFromLocale, getLanguageLocale } from '
  * after the corresponding locale message bundle has loaded. */
 export function HtmlLangSync() {
   const locale = useLocale();
-  const language = getLanguageFromLocale(locale) ?? 'en';
+  const language = getLanguageFromLocale(locale) ?? 'ar';
   useEffect(() => {
     if (typeof document === 'undefined') return;
     const el = document.documentElement;

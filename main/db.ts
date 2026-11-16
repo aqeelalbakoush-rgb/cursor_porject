@@ -11213,6 +11213,9 @@ function seedInstallDefaults(): void {
     db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run(key, value);
 
   insert('business_name', '');
+  // WinCafe defaults. Phone-home stays off. Tax screens stay hidden until an owner turns them on.
+  insert('phone_home_enabled', 'false');
+  insert('tax_features_enabled', 'false');
   insert('business_type', 'restaurant');
   // country/currency/currency_symbol/timezone are deliberately not seeded here:
   // they come only from the signup wizard (docs/reference/product-invariants.md,

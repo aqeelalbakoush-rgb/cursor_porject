@@ -276,7 +276,7 @@ function businessShape(s: Record<string, string>) {
     business_day_start_time: s.business_day_start_time || '00:00',
     currency: s.currency || '',
     country: s.country || '',
-    language: s.language || 'en',
+    language: s.language || 'ar',
     tax_registration_number: s.tax_registration_number || '',
     state_code: s.state_code || '',
     business_address: s.business_address || '',

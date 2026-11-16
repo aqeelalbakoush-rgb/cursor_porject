@@ -441,6 +441,24 @@ export default function SettingsPage() {
   const canManageTaxPacks = tenantCan(currentTenant, 'tax-packs.manage');
   const canManageTaxConfiguration = tenantCan(currentTenant, 'tax-configuration.manage');
   const canViewTaxConfiguration = tenantCan(currentTenant, 'tax-packs.view-test');
+  const [taxFeaturesEnabled, setTaxFeaturesEnabled] = useState(false);
+  const showTaxUi = taxFeaturesEnabled && canViewTaxConfiguration;
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .get('/settings/tax_features_enabled')
+      .then((response) => {
+        if (cancelled) return;
+        const value = String(response?.data?.setting?.value ?? '');
+        setTaxFeaturesEnabled(value === 'true' || value === '1');
+      })
+      .catch(() => {
+        if (!cancelled) setTaxFeaturesEnabled(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const canManageMobileAccess = tenantCan(currentTenant, 'mobile-access.manage');
   const canManageCloud = tenantCan(currentTenant, 'cloud.manage');
   const canManageGoogleDrive = tenantCan(currentTenant, 'google-drive.manage');
@@ -712,7 +730,7 @@ export default function SettingsPage() {
         {
           isAdmin,
           isOwner,
-          canViewTaxConfiguration,
+          canViewTaxConfiguration: showTaxUi,
           canManageQrMenu,
           canManageMobileAccess,
           canManageDatabase,
@@ -4154,7 +4172,7 @@ export default function SettingsPage() {
       let resolvedTaxIdFormat = putRes.data?.tax_id_format || null;
       if (savedBusiness.countryCode !== form.countryCode) {
         const taxSetting = await api.get('/settings/taxes_enabled').catch(() => null);
-        if (taxSetting?.data.setting?.value === 'true') {
+        if (taxFeaturesEnabled && taxSetting?.data.setting?.value === 'true') {
           try {
             const ensureRes = await api.post('/tax-packs/ensure-country', {
               country: form.countryCode,
@@ -4643,7 +4661,7 @@ export default function SettingsPage() {
                 onClick={handleSettingsTabChange}
               />
             )}
-            {canViewTaxConfiguration && (
+            {showTaxUi && (
               <SettingsNavItem
                 label={t('taxConfiguration')}
                 value="tax"
@@ -5018,7 +5036,7 @@ export default function SettingsPage() {
             </TabsContent>
           )}
 
-          {canViewTaxConfiguration && (
+          {showTaxUi && (
             <TabsContent value="tax">
               <TaxConfigurationPanel
                 isOwner={canManageTaxPacks}

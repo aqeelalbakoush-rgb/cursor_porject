@@ -247,7 +247,7 @@ test('a structured stock rejection displays the specific item name to the cashie
       'support ticket receives the item-specific stock rejection message',
     ).toBe('Insufficient stock for "Double Cheeseburger"');
     expect(supportSubmissions[0].category).toBe('general');
-    expect(supportSubmissions[0].subject).toBe('FloCafe inventory or stock validation help');
+    expect(supportSubmissions[0].subject).toBe('WinCafe inventory or stock validation help');
     expect(supportSubmissions[0].log_tail).toBe(
       '[2026-11-09 12:00:00] [warn] Stock check rejected Double Cheeseburger',
     );
@@ -352,7 +352,7 @@ test('a lost prepaid payment response replays the same saved request after bill 
     const checkout = page.getByTestId('prepaid-checkout-modal');
     await expect(checkout).toBeVisible();
     await expect(
-      checkout.getByText('FloCafe could not confirm whether the order or payment was saved.', {
+      checkout.getByText('WinCafe could not confirm whether the order or payment was saved.', {
         exact: true,
       }),
     ).toBeVisible();
@@ -597,7 +597,7 @@ test('an unrelated payment does not resolve another cashier’s pending payment 
   await expect(
     page
       .getByRole('main')
-      .getByText('FloCafe could not confirm whether the order or payment was saved.', {
+      .getByText('WinCafe could not confirm whether the order or payment was saved.', {
         exact: false,
       }),
   ).toBeVisible();
@@ -785,7 +785,7 @@ test('a KOT print failure preserves backend failure_class and sanitized detail i
     await expect.poll(() => supportSubmissions.length).toBe(1);
     expect('log_tail' in supportSubmissions[0]).toBe(false);
     expect(supportSubmissions[0].category).toBe('printer');
-    expect(supportSubmissions[0].subject).toBe('FloCafe printer problem');
+    expect(supportSubmissions[0].subject).toBe('WinCafe printer problem');
     expect(supportSubmissions[0].correlation_id).toBe(kotCorrelationId);
     expect(supportSubmissions[0].message).toBe('Kitchen USB printer queue is paused');
     expect(supportSubmissions[0].operation_failure).toEqual({

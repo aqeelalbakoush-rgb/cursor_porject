@@ -160,7 +160,7 @@ async function main() {
       'the anonymous aggregate reaches the existing collector',
     );
     const anonymous = JSON.parse(anonymousBytes as string);
-    assert.equal(anonymous.app, 'flocafe');
+    assert.equal(anonymous.app, 'wincafe');
     assert.equal(anonymous.event_type, 'diagnostic_counts');
     assert.deepEqual(
       Object.keys(anonymous).sort(),

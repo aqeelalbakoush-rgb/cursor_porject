@@ -1,7 +1,7 @@
 {
   "name": "flo-desktop",
   "version": "3.13.61",
-  "description": "Free, open-source, offline-first restaurant POS with KDS, SQLite, and thermal printer support.",
+  "description": "WinCafe by WinTech. Offline-first restaurant POS with KDS, SQLite, and thermal printer support.",
   "engines": {
     "node": ">=22.12.0"
   },
@@ -374,8 +374,8 @@
     "test:printer-text-size": "ts-node --transpile-only -P tests/tsconfig.json tests/printer-text-size.test.ts && node tests/run-electron-node-test.cjs tests/migration-printer-text-size.test.ts"
   },
   "author": {
-    "name": "Flo",
-    "email": "support@flo.local"
+    "name": "WinTech",
+    "email": "support@wincafe.local"
   },
   "homepage": "https://flopos.com",
   "repository": {
@@ -458,8 +458,8 @@
     "ws": "^8.23.0"
   },
   "build": {
-    "appId": "com.flo.desktop",
-    "productName": "Flo Cafe",
+    "appId": "com.wintech.wincafe",
+    "productName": "WinCafe",
     "icon": "assets/icon-512.png",
     "afterPack": "scripts/afterPack.js",
     "asar": true,
@@ -508,15 +508,15 @@
         }
       ],
       "icon": "assets/icon.ico",
-      "artifactName": "flocafe-${version}-win-${arch}.${ext}"
+      "artifactName": "wincafe-${version}-win-${arch}.${ext}"
     },
     "appx": {
-      "applicationId": "FloCafe",
-      "backgroundColor": "#1e1e2e",
-      "publisherDisplayName": "Codify Apps Private Limited",
+      "applicationId": "WinCafe",
+      "backgroundColor": "#0f766e",
+      "publisherDisplayName": "WinTech",
       "identityName": "CodifyAppsPrivateLimited.FloCafe",
       "publisher": "CN=34AFD24D-EC88-44B8-B309-08BB8A6BB5F7",
-      "displayName": "Flo Cafe",
+      "displayName": "WinCafe",
       "languages": [
         "en-US"
       ]
@@ -546,9 +546,9 @@
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "notarize": true,
-      "artifactName": "flocafe-${version}-mac-${arch}.${ext}",
+      "artifactName": "wincafe-${version}-mac-${arch}.${ext}",
       "extendInfo": {
-        "NSLocalNetworkUsageDescription": "Flo Cafe connects to thermal printers, KDS displays, and the Waiter & Table Terminal on your local network.",
+        "NSLocalNetworkUsageDescription": "WinCafe connects to thermal printers, KDS displays, and the Waiter & Table Terminal on your local network.",
         "NSBonjourServices": [
           "_http._tcp",
           "_pdl-datastream._tcp",
@@ -569,7 +569,7 @@
       "type": "distribution",
       "extendInfo": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSLocalNetworkUsageDescription": "Flo Cafe connects to thermal printers, KDS displays, and the Waiter & Table Terminal on your local network.",
+        "NSLocalNetworkUsageDescription": "WinCafe connects to thermal printers, KDS displays, and the Waiter & Table Terminal on your local network.",
         "NSBonjourServices": [
           "_http._tcp",
           "_pdl-datastream._tcp",
@@ -589,8 +589,8 @@
       "identity": "Apple Development: Codify Apps Private Limited (BKDY677XJA)"
     },
     "linux": {
-      "synopsis": "Self-hosted Point of Sale for cafes and restaurants",
-      "description": "Flo is a free, open-source point-of-sale system for cafes, restaurants, and small kitchens. Local-first, offline-capable, no cloud lock-in, no per-seat fees.",
+      "synopsis": "WinCafe by WinTech, a self-hosted point of sale",
+      "description": "WinCafe by WinTech is an offline-first point-of-sale system for cafes, restaurants, and small kitchens.",
       "target": [
         {
           "target": "AppImage",
@@ -623,8 +623,8 @@
       ],
       "icon": "assets",
       "category": "Office",
-      "executableName": "flocafe",
-      "artifactName": "flocafe-${version}-linux.${ext}",
+      "executableName": "wincafe",
+      "artifactName": "wincafe-${version}-linux.${ext}",
       "extraFiles": [
         {
           "from": "assets/com.flo.desktop.metainfo.xml",
@@ -637,8 +637,8 @@
       ],
       "desktop": {
         "entry": {
-          "Name": "Flo Cafe",
-          "Comment": "Free, open-source POS for cafes and restaurants",
+          "Name": "WinCafe",
+          "Comment": "WinCafe by WinTech, an offline-first POS for cafes and restaurants",
           "GenericName": "Point of Sale",
           "Keywords": "pos;point of sale;restaurant;cafe;billing;invoice;",
           "StartupWMClass": "flo-desktop"
@@ -646,7 +646,7 @@
       }
     },
     "appImage": {
-      "artifactName": "flocafe-${version}-linux.appimage"
+      "artifactName": "wincafe-${version}-linux.appimage"
     },
     "snapcraft": {
       "base": "core24",

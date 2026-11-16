@@ -1,7 +1,7 @@
 {
-  "name": "Flo",
-  "short_name": "Flo",
-  "description": "Smart Point of Sale for restaurants, salons, and retail",
+  "name": "WinCafe",
+  "short_name": "WinCafe",
+  "description": "WinCafe by WinTech",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#ffffff",

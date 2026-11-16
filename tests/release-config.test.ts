@@ -279,12 +279,12 @@ function run() {
 
   assert.equal(
     build?.linux?.artifactName,
-    'flocafe-${version}-linux.${ext}',
+    'wincafe-${version}-linux.${ext}',
     'Linux package artifact template must remain deterministic',
   );
   assert.equal(
     build?.appImage?.artifactName,
-    'flocafe-${version}-linux.appimage',
+    'wincafe-${version}-linux.appimage',
     'AppImage artifact extension must be lowercase',
   );
   assert.equal(

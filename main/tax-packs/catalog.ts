@@ -7,6 +7,8 @@ import {
 import { createHash, verify, type KeyLike } from 'crypto';
 import type { CountryPack, CountryTaxPackPluginArtifact, PluginPrintTemplate } from './types';
 import { TRUSTED_TAX_PACK_SIGNING_PUBLIC_KEY } from './trusted-signing-key';
+import { phoneHomeEnabled } from '../../shared/phone-home';
+import { getSettingValue } from '../db';
 import { validateTemplateChargeRows, validateTemplateLabelsMap } from '../print/template-labels';
 
 const RELEASES_API_URL = 'https://api.github.com/repos/FreeOpenSourcePOS/FloCafe-Plugins/releases';
@@ -245,11 +247,24 @@ async function fetchText(
   return bytes.toString('utf8');
 }
 
+function phoneHomeSetting(): string | null {
+  try {
+    return getSettingValue('phone_home_enabled');
+  } catch {
+    return null;
+  }
+}
+
 export async function fetchRemoteTaxPackCatalog(
   fetchImpl: FetchLike = fetch,
   signal?: AbortSignal,
 ): Promise<RemoteTaxPackCatalog> {
   assertOnlineAllowed('Tax pack catalog');
+  if (fetchImpl === fetch && !phoneHomeEnabled(phoneHomeSetting())) {
+    throw new Error(
+      'Phone-home is disabled. Set WINCAFE_PHONE_HOME=1 or phone_home_enabled=true to fetch the FloCafe-Plugins catalog.',
+    );
+  }
   for (let page = 1; page <= MAX_RELEASE_PAGES; page += 1) {
     assertOnlineAllowed('Tax pack catalog');
     const releasesJson = await fetchText(
@@ -447,6 +462,11 @@ export async function downloadAndVerifyTaxPack(
   signal?: AbortSignal,
 ): Promise<VerifiedTaxPackArtifact> {
   assertOnlineAllowed('Tax pack download');
+  if (fetchImpl === fetch && !phoneHomeEnabled(phoneHomeSetting())) {
+    throw new Error(
+      'Phone-home is disabled. Set WINCAFE_PHONE_HOME=1 or phone_home_enabled=true to download a FloCafe-Plugins tax pack.',
+    );
+  }
   if (!validCatalogEntry(entry)) throw new Error('Tax pack catalog entry is invalid');
   const [packJson, signature] = await Promise.all([
     fetchText(entry.downloadUrl, MAX_PACK_BYTES, fetchImpl, undefined, signal, 'Tax pack download'),
