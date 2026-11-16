@@ -1,0 +1,15 @@
+---
+description: Team workflow, file ownership, QA gate, and Arabic RTL rules.
+alwaysApply: true
+---
+
+# Team workflow
+
+- Read docs/TEAM_OS.md, docs/OWNERSHIP.md, docs/ARCHITECTURE.md, and docs/TASKS.md first.
+- Work only on the task branch you were given. Touch only files listed in the task brief.
+- Keep pull requests small. Do not push to main.
+- Run existing lint and tests. Report exact commands and results. Never claim a test passed unless it ran.
+- Do not commit secrets.
+- Arabic UI: dir="rtl", logical CSS properties, Arabic copy, Western digits 0-9.
+- End with status, branch, commit, files changed, tests run and results, and open issues.
+- QA sets qa-passed or qa-changes-requested. CTO squash-merges only when CI is green and qa-passed is set.
