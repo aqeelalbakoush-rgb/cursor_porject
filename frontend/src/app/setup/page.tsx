@@ -105,16 +105,15 @@ export default function SetupPage() {
   // Wizard language follows shared store to update translations immediately.
   const language = usePosSettingsStore((s) => s.language);
   const setStoreLanguage = usePosSettingsStore((s) => s.setLanguage);
-  const [browserLanguage, setBrowserLanguage] = useState<Language>('en');
-  // No default country: regional settings come only from what the owner
-  // selects here (docs/reference/product-invariants.md, "Regional settings come from
-  // signup, never from a fallback").
-  const [country, setCountry] = useState<string>('');
-  const [currency, setCurrency] = useState<string>('');
+  const [browserLanguage, setBrowserLanguage] = useState<Language>('ar');
+  // WinCafe opens on Libya, Libyan dinar, and Tripoli time. The owner can change
+  // these before finishing setup; the choice is still stored by signup.
+  const [country, setCountry] = useState<string>('LY');
+  const [currency, setCurrency] = useState<string>('LYD');
   const [countryQuery, setCountryQuery] = useState<string>('');
   // The country profile timezone is only a suggested default, set once a
   // country is chosen below; the owner can override it for multi-timezone countries.
-  const [timezone, setTimezone] = useState<string>('');
+  const [timezone, setTimezone] = useState<string>('Africa/Tripoli');
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -144,8 +143,8 @@ export default function SetupPage() {
   const ownerApprovalPinValid =
     /^\d{4,6}$/.test(ownerApprovalPin) && ownerApprovalPin === ownerApprovalPinConfirm;
 
-  const cloudEnabled = true;
-  const [cloudServerUrl, setCloudServerUrl] = useState(DEFAULT_CLOUD_SERVER_URL);
+  const cloudEnabled = false;
+  const [cloudServerUrl, setCloudServerUrl] = useState('');
 
   const isPasswordValid = validatePassword;
   const passwordMeetsRequirements = form.password.length === 0 || isPasswordValid(form.password);
@@ -381,8 +380,8 @@ export default function SetupPage() {
         master_pin: masterPinAvailable ? masterPin : undefined,
         owner_approval_pin: ownerApprovalPin,
         owner_approval_pin_confirmation: ownerApprovalPinConfirm,
-        cloud_sync_enabled: true,
-        cloud_server_url: cloudServerUrl.trim() || DEFAULT_CLOUD_SERVER_URL,
+        cloud_sync_enabled: false,
+        cloud_server_url: '',
         email_product_updates: productUpdates,
         email_marketing: marketing,
         product_analytics_level: analyticsLevel ?? undefined,
@@ -409,7 +408,7 @@ export default function SetupPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted px-4 py-12">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
-          <img src="/logo.svg" alt="Flo" width={72} height={72} className="mx-auto mb-4" />
+          <img src="/logo.svg" alt="WinCafe" width={72} height={72} className="mx-auto mb-4" />
           <h1 className="text-3xl font-bold">{t('welcome')}</h1>
           <p className="text-muted-foreground mt-2">{t('tagline')}</p>
         </div>

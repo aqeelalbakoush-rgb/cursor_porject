@@ -499,7 +499,7 @@ describe('Issue #263: Phone Normalization, Validation, and Privacy', () => {
       assert.ok(sentBody.length > 0);
 
       const payload = JSON.parse(sentBody);
-      assert.equal(payload.app, 'flocafe');
+      assert.equal(payload.app, 'wincafe');
       assert.equal(payload.event_type, 'app_launch');
       assert.equal(payload.country, 'IN');
       assert.ok(payload.anon_id);

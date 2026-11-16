@@ -63,6 +63,21 @@ async function main() {
   const { baseUrl, server } = await startServer(app);
 
   try {
+    db.prepare("UPDATE settings SET value = 'false' WHERE key = 'tax_features_enabled'").run();
+    const disabledRes = await api(baseUrl, '/api/tax-packs/manual-config', {
+      method: 'POST',
+      headers: owner.authHeader,
+      body: { inclusive: true, categories: [] },
+    });
+    assertEqual(disabledRes.status, 403, 'tax writes stay closed while tax_features_enabled is off');
+    const disabledTaxSettings = await api(baseUrl, '/api/settings/tax', {
+      method: 'PUT',
+      headers: owner.authHeader,
+      body: { country: 'IN', tax_registered: false },
+    });
+    assertEqual(disabledTaxSettings.status, 403, 'PUT /api/settings/tax stays closed while tax features are off');
+    db.prepare("UPDATE settings SET value = 'true' WHERE key = 'tax_features_enabled'").run();
+
     console.log('\n1. Owner creates a two-category manual config ("Standard" + "Reduced")');
     const createRes = await api(baseUrl, '/api/tax-packs/manual-config', {
       method: 'POST',

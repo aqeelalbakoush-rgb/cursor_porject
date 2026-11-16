@@ -26,13 +26,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Flo',
-  description: 'Smart Point of Sale for restaurants',
+  title: 'WinCafe',
+  description: 'WinCafe by WinTech',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Flo',
+    title: 'WinCafe',
   },
   icons: {
     icon: [
@@ -57,7 +57,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
         {/* gh-513 FOUC guard: apply the last-resolved palette before first
             paint. Priority: ?theme= URL param (standalone windows opened by

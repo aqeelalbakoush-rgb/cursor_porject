@@ -31,9 +31,13 @@ const isLinux = os.platform() === 'linux';
 //   - Mac/Windows: productName "Flo Cafe"
 const FLO_PATTERNS = [
   /(?:^|[\s\\/])flocafe(?:\.exe)?(?:$|\s)/i,
+  /(?:^|[\s\\/])wincafe(?:\.exe)?(?:$|\s)/i,
   /(?:^|[\s\\/])Flo[\s_\-]*Cafe(?:\.exe)?(?:$|\s)/i,
+  /(?:^|[\s\\/])WinCafe(?:\.exe)?(?:$|\s)/i,
   /(?:^|[\s\\/])Flo Cafe\.app(?:[\\/]Contents[\\/]MacOS[\\/]Flo Cafe)?(?:$|\s)/i,
+  /(?:^|[\s\\/])WinCafe\.app(?:[\\/]Contents[\\/]MacOS[\\/]WinCafe)?(?:$|\s)/i,
   /(?:^|\s)com\.flo\.desktop(?:\.\S*)?(?:$|\s)/i,
+  /(?:^|\s)com\.wintech\.wincafe(?:\.\S*)?(?:$|\s)/i,
   /(?:^|\s)flo[_\-]?pos(?:-service)?(?:\.exe)?(?:$|\s)/i,
   /(?:^|\s)electron(?:\s+\S+)*\s+--appName=flo[_\-]?desktop(?:$|\s)/i,
   /(?:^|\s)(?:node|nodejs)(?:\s+\S+)*[\\/]FloCafe[\\/](?:dev-server\.js|dist[\\/](?:main[\\/])?index\.js)(?:$|\s)/i,

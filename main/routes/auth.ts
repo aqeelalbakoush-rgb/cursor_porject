@@ -45,7 +45,6 @@ import { countryConfirmationPatch } from '../services/country-provenance';
 import {
   cloudSync,
   CloudRequestError,
-  DEFAULT_CLOUD_SERVER_URL,
   normalizeCloudServerUrl,
 } from '../services/cloud-sync';
 import { asyncHandler } from '../middleware/async-handler';
@@ -161,7 +160,7 @@ function buildLocalTenant(db: ReturnType<typeof getDatabase>, userId: string, us
     group_separator: snapshot?.groupSeparator ?? ',',
     timezone: snapshot?.timezone || s.timezone || '',
     business_day_start_time: s.business_day_start_time || '00:00',
-    language: s.language || 'en',
+    language: s.language || 'ar',
     // Include print policies in tenant snapshot so renderer bootstraps them before first print.
     bill_language_policy: s.bill_language_policy || null,
     kot_language_policy: s.kot_language_policy || null,
@@ -1783,17 +1782,22 @@ router.post('/setup/initialize', (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid service model' });
     }
 
-    // New installs start with cloud coordination enabled.
-    const cloudSyncEnabled = true;
+    // WinCafe: cloud sync stays off unless setup explicitly asks for it, and
+    // an omitted URL is never filled in with blue.flopos.com.
+    const requestedCloudSync = req.body?.cloud_sync_enabled;
+    const cloudSyncEnabled =
+      requestedCloudSync === true || requestedCloudSync === '1' || requestedCloudSync === 'true';
     let normalizedCloudServerUrl: string | undefined;
-    if (cloudSyncEnabled) {
+    if (typeof cloud_server_url === 'string' && cloud_server_url.trim()) {
       try {
-        normalizedCloudServerUrl = normalizeCloudServerUrl(
-          cloud_server_url || DEFAULT_CLOUD_SERVER_URL,
-        );
+        normalizedCloudServerUrl = normalizeCloudServerUrl(cloud_server_url);
       } catch {
         return res.status(400).json({ error: 'Cloud server URL must be a valid HTTPS URL' });
       }
+    } else if (cloudSyncEnabled) {
+      return res.status(400).json({
+        error: 'A cloud server URL is required to enable cloud sync',
+      });
     }
 
     let userId = '';
@@ -1841,7 +1845,7 @@ router.post('/setup/initialize', (req: Request, res: Response) => {
         currency_symbol:
           currency_symbol || getCurrencySymbol(normalizedCurrency, resolvedCountry.locale),
         timezone: resolvedTimezone,
-        language,
+        language: typeof language === 'string' && language.trim() ? language.trim() : 'ar',
         business_address: outletAddress,
         business_phone: outletPhone,
         address: outletAddress,
@@ -1873,7 +1877,7 @@ router.post('/setup/initialize', (req: Request, res: Response) => {
         // '1'/'0', not 'true'/'false' — mirrors FloAdmin's own `stores` table and
         // matches how cloud-sync.ts reads this key everywhere else.
         cloud_sync_enabled: cloudSyncEnabled ? '1' : '0',
-        cloud_server_url: normalizedCloudServerUrl || DEFAULT_CLOUD_SERVER_URL,
+        cloud_server_url: normalizedCloudServerUrl || '',
         email_product_updates: email_product_updates === true ? 'true' : 'false',
         email_marketing: email_marketing === true ? 'true' : 'false',
         cloud_services_disabled_by_user: 'false',

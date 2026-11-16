@@ -93,7 +93,7 @@ export const LANGUAGES = {
     load: () => import('./messages/fa.json'),
   },
   ar: {
-    locale: 'ar-SA',
+    locale: 'ar-LY',
     nativeName: 'العربية',
     direction: 'rtl',
     selectable: true,

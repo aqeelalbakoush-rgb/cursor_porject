@@ -276,7 +276,7 @@ function businessShape(s: Record<string, string>) {
     business_day_start_time: s.business_day_start_time || '00:00',
     currency: s.currency || '',
     country: s.country || '',
-    language: s.language || 'en',
+    language: s.language || 'ar',
     tax_registration_number: s.tax_registration_number || '',
     state_code: s.state_code || '',
     business_address: s.business_address || '',
@@ -568,6 +568,10 @@ router.get('/tax', requirePermission('settings.view'), (req: Request, res: Respo
 
 router.put('/tax', requirePermission('tax-configuration.manage'), (req: Request, res: Response) => {
   try {
+    const taxFeatures = getSettingValue('tax_features_enabled');
+    if (taxFeatures !== 'true' && taxFeatures !== '1') {
+      return res.status(403).json({ error: 'Tax features are disabled' });
+    }
     const { tax_registered, tax_registration_number, state_code, tax_scheme, country } = req.body;
 
     if (!validBusinessLocation(undefined, undefined, country)) {
@@ -1208,6 +1212,19 @@ router.post(
   requirePermission('cloud.manage'),
   asyncHandler(async (req: Request, res: Response) => {
     try {
+      const { phoneHomeEnabled } = require('../../shared/phone-home') as typeof import('../../shared/phone-home');
+      let phoneHomeSetting: string | null = null;
+      try {
+        phoneHomeSetting = getSettingValue('phone_home_enabled');
+      } catch {
+        phoneHomeSetting = null;
+      }
+      if (!phoneHomeEnabled(phoneHomeSetting)) {
+        return res.status(403).json({
+          error:
+            'Phone-home is disabled. Set WINCAFE_PHONE_HOME=1 or phone_home_enabled=true to register with the cloud server.',
+        });
+      }
       let requestedUrl: string | undefined;
       if (req.body?.cloud_server_url !== undefined) {
         if ((req as Request & { user?: { role?: string } }).user?.role !== 'owner') {

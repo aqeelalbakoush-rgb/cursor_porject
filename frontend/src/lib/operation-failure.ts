@@ -633,7 +633,7 @@ export function resolvePosFailureSupportMetadata(input: {
       isExpectedRejection: false,
       variant: 'error',
       category: isPrinter ? 'printer' : 'bug',
-      subject: isPrinter ? 'FloCafe printer problem' : 'FloCafe order problem',
+      subject: isPrinter ? 'WinCafe printer problem' : 'WinCafe order problem',
       rejectionKind: null,
       affectedItem: null,
     };
@@ -654,7 +654,7 @@ export function resolvePosFailureSupportMetadata(input: {
       isExpectedRejection: true,
       variant: 'validation',
       category: 'general',
-      subject: 'FloCafe inventory or stock validation help',
+      subject: 'WinCafe inventory or stock validation help',
       rejectionKind: 'stock_insufficient',
       affectedItem,
     };
@@ -672,7 +672,7 @@ export function resolvePosFailureSupportMetadata(input: {
       isExpectedRejection: true,
       variant: 'validation',
       category: 'general',
-      subject: 'FloCafe business day or shift validation help',
+      subject: 'WinCafe business day or shift validation help',
       rejectionKind: 'closed_books',
       affectedItem: null,
     };
@@ -690,7 +690,7 @@ export function resolvePosFailureSupportMetadata(input: {
       isExpectedRejection: true,
       variant: 'validation',
       category: 'general',
-      subject: 'FloCafe business day or shift validation help',
+      subject: 'WinCafe business day or shift validation help',
       rejectionKind: 'shift_required',
       affectedItem: null,
     };
@@ -698,10 +698,10 @@ export function resolvePosFailureSupportMetadata(input: {
 
   const subject =
     reasonCode === 'payment.invalid'
-      ? 'FloCafe payment validation help'
+      ? 'WinCafe payment validation help'
       : reasonCode === 'discount.rejected'
-        ? 'FloCafe discount validation help'
-        : 'FloCafe order validation help';
+        ? 'WinCafe discount validation help'
+        : 'WinCafe order validation help';
 
   return {
     isExpectedRejection: true,

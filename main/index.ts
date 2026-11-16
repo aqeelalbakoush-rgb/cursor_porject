@@ -363,6 +363,17 @@ function setupAutoUpdater(): void {
 }
 
 function checkForUpdates(): void {
+  const { phoneHomeEnabled } = require('../shared/phone-home') as typeof import('../shared/phone-home');
+  let phoneHomeSetting: string | null = null;
+  try {
+    phoneHomeSetting = getSettingValue('phone_home_enabled');
+  } catch {
+    phoneHomeSetting = null;
+  }
+  if (!phoneHomeEnabled(phoneHomeSetting)) {
+    log.info('[Update] Phone-home disabled; not contacting the upstream update server');
+    return;
+  }
   if (isInstallReady(storedUpdateStatus, stagedUpdateReady)) {
     log.info('[Update] Ignoring check while a staged update awaits installation');
     return;
@@ -481,6 +492,16 @@ const suspendUpdaterForOfflineMode = createSuspendUpdaterForOfflineMode({
 });
 
 function downloadUpdate(): { success: boolean; error?: string } {
+  const { phoneHomeEnabled } = require('../shared/phone-home') as typeof import('../shared/phone-home');
+  let phoneHomeSetting: string | null = null;
+  try {
+    phoneHomeSetting = getSettingValue('phone_home_enabled');
+  } catch {
+    phoneHomeSetting = null;
+  }
+  if (!phoneHomeEnabled(phoneHomeSetting)) {
+    return { success: false, error: 'Phone-home is disabled' };
+  }
   if (isOfflineMode()) return { success: false, error: 'Offline mode is on' };
   if (!canStartUpdateDownload(storedUpdateStatus, updaterPhase, stagedUpdateReady)) {
     return { success: false, error: 'No update is waiting to be downloaded' };
@@ -498,6 +519,17 @@ function downloadUpdate(): { success: boolean; error?: string } {
 
 // Best-effort startup check for tax pack plugin updates.
 async function checkTaxPackUpdatesOnStartup(): Promise<void> {
+  const { phoneHomeEnabled } = require('../shared/phone-home') as typeof import('../shared/phone-home');
+  let phoneHomeSetting: string | null = null;
+  try {
+    phoneHomeSetting = getSettingValue('phone_home_enabled');
+  } catch {
+    phoneHomeSetting = null;
+  }
+  if (!phoneHomeEnabled(phoneHomeSetting)) {
+    log.info('[Tax Packs] Phone-home disabled; FloCafe-Plugins catalog check skipped');
+    return;
+  }
   if (isOfflineMode()) return;
   try {
     const remote = await fetchRemoteTaxPackCatalog();
@@ -691,14 +723,14 @@ async function showRuntimeStuckDialog(reason: string): Promise<void> {
       `URL: ${lastWindowLoadFailure.validatedURL ?? `http://localhost:${getServerPort()}`}`,
     );
   }
-  detailLines.push(`Platform: ${process.platform} | Flo: ${app.getVersion()}`);
+  detailLines.push(`Platform: ${process.platform} | WinCafe: ${app.getVersion()}`);
 
   const { response } = await dialog.showMessageBox({
     type: 'error',
-    title: 'Flo needs to restart',
+    title: 'WinCafe needs to restart',
     message:
-      'Flo could not recover automatically. This usually means another program ' +
-      '(antivirus, firewall, or a leftover Flo process) is blocking its local server.\n\n' +
+      'WinCafe could not recover automatically. This usually means another program ' +
+      '(antivirus, firewall, or a leftover WinCafe process) is blocking its local server.\n\n' +
       'Please quit and reopen the app. If this keeps happening, sending a diagnostic ' +
       'report helps us fix it — it contains no order, customer, or business data.',
     detail: detailLines.join('\n'),
@@ -717,7 +749,7 @@ async function showRuntimeStuckDialog(reason: string): Promise<void> {
 
   await dialog.showMessageBox({
     type: 'info',
-    title: 'Flo',
+    title: 'WinCafe',
     message:
       'Diagnostic captured. If sharing is enabled and this device is online, it will be sent automatically.',
     buttons: ['Quit'],
@@ -1195,7 +1227,7 @@ function createTray(): void {
         },
       ]);
 
-      tray.setToolTip('Flo Cafe');
+      tray.setToolTip('WinCafe');
       tray.setContextMenu(linuxMenu);
       // Single-click also shows the window on Linux (no double-click standard).
       tray.on('click', () => {
@@ -1222,7 +1254,7 @@ function createTray(): void {
 
     const contextMenu = Menu.buildFromTemplate([
       {
-        label: 'Open Flo',
+        label: 'Open WinCafe',
         click: () => {
           showMainWindow();
         },
@@ -1237,7 +1269,7 @@ function createTray(): void {
       },
     ]);
 
-    tray.setToolTip('Flo');
+    tray.setToolTip('WinCafe');
     tray.setContextMenu(contextMenu);
     tray.on('double-click', () => {
       showMainWindow();
@@ -1251,7 +1283,7 @@ function startMdns(): void {
   try {
     bonjour = new Bonjour();
     bonjour.publish({
-      name: 'Flo',
+      name: 'WinCafe',
       type: 'http',
       port: getServerPort(),
       host: 'flo', // resolves as flo.local on the LAN
@@ -1485,7 +1517,7 @@ function createMenu(): void {
       label: 'Window',
       submenu: [
         {
-          label: 'Flo Cafe',
+          label: 'WinCafe',
           click: () => {
             if (showMainWindow()) mainWindow?.focus();
           },
@@ -1501,7 +1533,7 @@ function createMenu(): void {
       label: 'Help',
       submenu: [
         ...(process.platform !== 'darwin'
-          ? [{ label: 'About Flo', click: () => showAbout() }]
+          ? [{ label: 'About WinCafe', click: () => showAbout() }]
           : []),
         ...(isStoreBuild ? [] : [{ label: 'Check for Updates', click: () => checkForUpdates() }]),
         {
@@ -1540,8 +1572,8 @@ function showAbout(): void {
   const serverAppPort = getServerAppPort();
   dialog.showMessageBox({
     type: 'info',
-    title: 'About Flo',
-    message: 'Flo Cafe',
+    title: 'About WinCafe',
+    message: 'WinCafe by WinTech',
     detail: [
       `Version: ${app.getVersion()}`,
       `Electron: ${process.versions.electron}`,
@@ -1782,7 +1814,7 @@ async function initialize(): Promise<void> {
         return;
       }
       try {
-        dialog.showErrorBox('Initialization Error', `Failed to start Flo: ${fatalStartupError}`);
+        dialog.showErrorBox('Initialization Error', `Failed to start WinCafe: ${fatalStartupError}`);
       } catch (dialogError) {
         console.error('[Flo] Failed to display initialization error dialog:', dialogError);
       }
@@ -1813,6 +1845,7 @@ async function initialize(): Promise<void> {
 }
 
 app.whenReady().then(() => {
+  app.setName('WinCafe');
   initializationPromise = initialize();
   void initializationPromise.then(
     () => {
