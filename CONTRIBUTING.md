@@ -2,6 +2,8 @@
 
 These rules apply to every role. The CTO reviews and merges. Aqeel approves deployment, data deletion, and paid services.
 
+The operating model is [docs/TEAM_OS.md](docs/TEAM_OS.md).
+
 ## Branches
 
 - One branch per task.
@@ -40,6 +42,15 @@ These rules apply to every role. The CTO reviews and merges. Aqeel approves depl
 ## Approvals
 
 Do not deploy, delete data, or use paid services without Aqeel's explicit approval.
+
+## QA gate
+
+See [docs/TEAM_OS.md](docs/TEAM_OS.md).
+
+- QA sets label `qa-passed` or `qa-changes-requested` after tests that actually ran.
+- The `qa-gate` check fails unless the pull request has `qa-passed` and does not have `qa-changes-requested`.
+- The CTO merges only when CI is green and the pull request has `qa-passed`.
+- Merge with a squash merge.
 
 ## Statuses
 

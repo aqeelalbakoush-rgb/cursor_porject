@@ -11,4 +11,5 @@ coverage/
 # Ignore editor state. Keep recommended shared workspace settings.
 .vscode/*
 !.vscode/settings.json
+!.vscode/extensions.json
 .idea/
