@@ -377,6 +377,18 @@ async function main() {
   upsertSetting.run('cloud_server_url', DEFAULT_CLOUD_SERVER_URL);
   upsertSetting.run('cloud_deletion_status', 'failed');
   upsertSetting.run('cloud_services_disabled_by_user', 'false');
+  upsertSetting.run('phone_home_enabled', 'false');
+
+  res = await request(app)
+    .post('/api/settings/cloud/register')
+    .set('Authorization', `Bearer ${ownerToken}`)
+    .send({});
+  assertEqualOrThrow(
+    res.status,
+    403,
+    'POST /api/settings/cloud/register does not contact the cloud server while phone-home is off',
+  );
+  upsertSetting.run('phone_home_enabled', 'true');
 
   res = await request(app)
     .post('/api/settings/cloud/register')

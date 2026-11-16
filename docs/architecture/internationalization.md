@@ -43,7 +43,7 @@ gets a key such as `zh-tw` and a `locale` of `zh-TW`. See [adding a language](..
 ### Right-to-left languages
 
 Exactly three registered languages are right-to-left: `fa` (Persian, `fa-IR`), `ar` (Arabic,
-`ar-SA`), and `ur` (Urdu, `ur-PK`). There is no Hebrew locale.
+`ar-LY`), and `ur` (Urdu, `ur-PK`). There is no Hebrew locale.
 
 Direction is applied to the document by `HtmlLangSync` in
 `frontend/src/components/layout/HtmlLangSync.tsx`, which sets `<html lang>` to the language's

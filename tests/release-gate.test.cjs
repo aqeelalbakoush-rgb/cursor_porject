@@ -350,10 +350,10 @@ function releaseRefRequest({
   const stableVersion = '3.3.0';
   const stablePayloads = new Map(expectedArtifactNames(stableVersion).map((name) => [name, Buffer.from(`stable:${name}`)]));
   const stableManifestFiles = {
-    'latest.yml': [`flocafe-${stableVersion}-win-x64.exe`],
-    'latest-mac.yml': [`flocafe-${stableVersion}-mac-x64.zip`, `flocafe-${stableVersion}-mac-arm64.zip`],
-    'latest-linux.yml': [`flocafe-${stableVersion}-linux-x64.appimage`],
-    'latest-linux-arm64.yml': [`flocafe-${stableVersion}-linux-arm64.appimage`],
+    'latest.yml': [`wincafe-${stableVersion}-win-x64.exe`],
+    'latest-mac.yml': [`wincafe-${stableVersion}-mac-x64.zip`, `wincafe-${stableVersion}-mac-arm64.zip`],
+    'latest-linux.yml': [`wincafe-${stableVersion}-linux-x64.appimage`],
+    'latest-linux-arm64.yml': [`wincafe-${stableVersion}-linux-arm64.appimage`],
   };
   for (const [manifestName, fileNames] of Object.entries(stableManifestFiles)) {
     const manifestText = [

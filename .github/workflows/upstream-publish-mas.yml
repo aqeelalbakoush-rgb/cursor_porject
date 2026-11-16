@@ -2,6 +2,7 @@ name: Publish Mac App Store
 
 # T-005 import: renamed from publish-mas.yml. Already workflow_dispatch only;
 # left that way so it does not publish to the Mac App Store from this repo.
+# T-009: the job is if:false so a manual dispatch still cannot publish.
 on:
   workflow_dispatch:
     inputs:
@@ -33,6 +34,7 @@ concurrency:
 
 jobs:
   publish-mas:
+    if: false
     runs-on: [self-hosted, macOS]
     timeout-minutes: 120
     steps:

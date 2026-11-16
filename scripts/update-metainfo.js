@@ -36,12 +36,12 @@ if (!notes) {
     try {
       notes = execFileSync(NOTES_HELPER, [version.split('-')[0]], { encoding: 'utf8' }).trim();
     } catch (_e2) {
-      notes = `Flo Cafe ${version}`;
+      notes = `WinCafe ${version}`;
     }
   }
 }
 if (!notes) {
-  notes = `Flo Cafe ${version}`;
+  notes = `WinCafe ${version}`;
 }
 notes = notes
   .trim()

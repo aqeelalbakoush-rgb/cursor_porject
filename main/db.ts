@@ -497,8 +497,6 @@ export function withDatabaseMaintenanceLock<T>(
   });
 }
 
-const DEFAULT_CLOUD_SERVER_URL = 'https://blue.flopos.com/';
-
 function randomSecret(): string {
   return crypto
     .randomBytes(32)
@@ -11181,10 +11179,10 @@ function seedCloudSyncDefaults(): void {
   createCloudSyncSchema();
 
   const serverUrl = getSettingValue('cloud_server_url');
-  if (!serverUrl) upsertSetting('cloud_server_url', DEFAULT_CLOUD_SERVER_URL);
+  if (!serverUrl) upsertSetting('cloud_server_url', '');
 
   // Defaults mirror FloAdmin store defaults; actual transmission is gated on api_key.
-  insertSettingIfMissing('cloud_sync_enabled', '1');
+  insertSettingIfMissing('cloud_sync_enabled', '0');
   insertSettingIfMissing('cloud_orders_enabled', '0');
   insertSettingIfMissing('cloud_reports_enabled', '1');
   insertSettingIfMissing('cloud_command_polling_enabled', '1');
@@ -11213,6 +11211,9 @@ function seedInstallDefaults(): void {
     db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run(key, value);
 
   insert('business_name', '');
+  // WinCafe defaults. Phone-home stays off. Tax screens stay hidden until an owner turns them on.
+  insert('phone_home_enabled', 'false');
+  insert('tax_features_enabled', 'false');
   insert('business_type', 'restaurant');
   // country/currency/currency_symbol/timezone are deliberately not seeded here:
   // they come only from the signup wizard (docs/reference/product-invariants.md,
@@ -11245,9 +11246,9 @@ function seedInstallDefaults(): void {
   // Unified charges & fees engine: JSON array of ChargeDefinition objects.
   // Validated only by the dedicated /settings/charges endpoints.
   insert('custom_charges', '[]');
-  insert('cloud_server_url', DEFAULT_CLOUD_SERVER_URL);
+  insert('cloud_server_url', '');
   insert('cloud_connected', 'false');
-  insert('cloud_sync_enabled', '1');
+  insert('cloud_sync_enabled', '0');
   insert('cloud_orders_enabled', '0');
   insert('cloud_reports_enabled', '1');
   insert('cloud_command_polling_enabled', '1');

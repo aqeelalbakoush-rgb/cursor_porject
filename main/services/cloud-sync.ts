@@ -3583,6 +3583,9 @@ export class CloudSyncService {
     if (isOfflineMode()) return;
     const db = getDatabase();
     const settings = this.readSettings(db);
+    // WinCafe: blue.flopos.com auto-register stays implemented and stays off by default.
+    const { phoneHomeEnabled } = require('../../shared/phone-home') as typeof import('../../shared/phone-home');
+    if (!phoneHomeEnabled(settings.phone_home_enabled)) return;
     if (
       isCloudDeletionBlocking(settings.cloud_deletion_status) ||
       settings.cloud_sync_enabled !== '1' ||

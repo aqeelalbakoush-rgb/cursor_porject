@@ -297,7 +297,7 @@ async function main() {
       { run_mode: 'packaged', install_source: hostLinuxPackage() },
       'sendEvent reports the detected run mode and install source alongside existing fields',
     );
-    assert.equal(body?.app, 'flocafe', 'existing telemetry fields are preserved');
+    assert.equal(body?.app, 'wincafe', 'existing telemetry fields are preserved');
     assert.equal(body?.event_type, 'app_launch', 'existing event type is preserved');
 
     detect({ app: { isPackaged: false }, platform: 'darwin' });
