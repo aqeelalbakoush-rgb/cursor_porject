@@ -46,6 +46,8 @@ const app = {
   isPackaged: true,
   commandLine: { appendSwitch() {} },
   name: 'flo-test',
+  setName() {},
+  setAppUserModelId() {},
   setPath() {},
   getPath: () => testDir,
   getVersion: () => 'test',

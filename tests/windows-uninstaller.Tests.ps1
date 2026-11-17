@@ -63,12 +63,12 @@ Describe 'Flo Cafe Windows uninstaller' {
 
   It 'bounds a hung child uninstaller and continues with manual cleanup' {
     $uninstallerExe = 'C:\Flo Cafe\uninstall.exe'
-    $fallbackInstallPath = 'C:\Flo Cafe Fixture\Programs\Flo Cafe'
+    $fallbackInstallPath = 'C:\Flo Cafe Fixture\Programs\WinCafe'
     $intermediateId = 9899
     $descendantId = 9900
     $lateDescendantId = 9902
     $entry = [pscustomobject]@{
-      DisplayName     = 'Flo Cafe'
+      DisplayName     = 'WinCafe'
       PSChildName     = 'FloCafe'
       PSPath          = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\FloCafe'
       InstallLocation = 'C:\Flo Cafe'
@@ -157,7 +157,7 @@ Describe 'Flo Cafe Windows uninstaller' {
   It 'blocks cleanup when child process inspection times out' {
     $uninstallerExe = 'C:\Flo Cafe\uninstall.exe'
     $entry = [pscustomobject]@{
-      DisplayName     = 'Flo Cafe'
+      DisplayName     = 'WinCafe'
       PSChildName     = 'FloCafe'
       PSPath          = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\FloCafe'
       InstallLocation = 'C:\Flo Cafe'
@@ -218,7 +218,7 @@ Describe 'Flo Cafe Windows uninstaller' {
   It 'reports partial cleanup when a completed child exit code cannot be read' {
     $uninstallerExe = 'C:\Flo Cafe\uninstall.exe'
     $entry = [pscustomobject]@{
-      DisplayName     = 'Flo Cafe'
+      DisplayName     = 'WinCafe'
       PSChildName     = 'FloCafe'
       PSPath          = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\FloCafe'
       InstallLocation = 'C:\Flo Cafe'
@@ -314,7 +314,7 @@ Describe 'Flo Cafe Windows uninstaller' {
 
   It 'skips purge when Flo Cafe cannot be confirmed stopped' {
     $entry = [pscustomobject]@{
-      DisplayName     = 'Flo Cafe'
+      DisplayName     = 'WinCafe'
       PSChildName     = 'FloCafe'
       PSPath          = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\FloCafe'
       InstallLocation = ''
@@ -338,7 +338,7 @@ Describe 'Flo Cafe Windows uninstaller' {
 
   It 'keeps readable registry results when another uninstall root is inaccessible' {
     $readableEntry = [pscustomobject]@{
-      DisplayName     = 'Flo Cafe'
+      DisplayName     = 'WinCafe'
       PSChildName     = 'FloCafe'
       PSPath          = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\FloCafe'
       InstallLocation = ''
@@ -375,14 +375,14 @@ Describe 'Flo Cafe Windows uninstaller' {
     $secondUninstaller = 'C:\Flo Cafe Second\uninstall.exe'
     $testEntries = @(
       [pscustomobject]@{
-        DisplayName     = 'Flo Cafe'
+        DisplayName     = 'WinCafe'
         PSChildName     = 'FloCafeFirst'
         PSPath          = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\FloCafeFirst'
         InstallLocation = $firstInstallPath
         UninstallString = "`"$firstUninstaller`""
       }
       [pscustomobject]@{
-        DisplayName     = 'Flo Cafe'
+        DisplayName     = 'WinCafe'
         PSChildName     = 'FloCafeSecond'
         PSPath          = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\FloCafeSecond'
         InstallLocation = $secondInstallPath
@@ -433,7 +433,7 @@ Describe 'Flo Cafe Windows uninstaller' {
   It 'does not launch an uninstaller outside a known install location' {
     $outsideExe = 'C:\Users\attacker\uninstall.exe'
     $entry = [pscustomobject]@{
-      DisplayName     = 'Flo Cafe'
+      DisplayName     = 'WinCafe'
       PSChildName     = 'FloCafe'
       PSPath          = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\FloCafe'
       InstallLocation = 'C:\Program Files\Flo Cafe'

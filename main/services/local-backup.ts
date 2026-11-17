@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { createBackup, getDatabase, getSettingValue, upsertSettings } from '../db';
+import { wincafeLocalBackupDir } from '../wincafe-profile';
 
 export const LOCAL_BACKUP_SETTING_KEY = 'local_backup_enabled';
 export const LOCAL_BACKUP_RETENTION = 5;
@@ -19,9 +20,9 @@ const BACKUP_FILE_PATTERN =
 
 export function getLocalBackupDir(): string {
   try {
-    return path.join(app.getPath('documents'), 'FloCafe', 'Backups');
+    return wincafeLocalBackupDir(app.getPath('documents'));
   } catch {
-    return path.join(app.getPath('userData'), 'FloCafe', 'Backups');
+    return wincafeLocalBackupDir(app.getPath('userData'));
   }
 }
 

@@ -34,7 +34,7 @@ const darkMainWindow = createMainWindow(
   true,
 );
 
-assert.equal(macMainWindow.options.name, 'flo-main');
+assert.equal(macMainWindow.options.name, 'wincafe-main');
 assert.equal(macMainWindow.options.windowStatePersistence, true);
 assert.equal(macMainWindow.options.titleBarStyle, 'hiddenInset');
 assert.equal(windowsMainWindow.options.titleBarStyle, 'hidden');

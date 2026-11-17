@@ -3447,7 +3447,7 @@ async function run(): Promise<void> {
       generic80.capabilities,
     );
     assert.ok(trTestBytes.includes(Buffer.from([0x1d, 0x76, 0x30])));
-    assert.ok(zRasterRequests.some((req) => req.text.includes('Flo Yazıcı Testi')));
+    assert.ok(zRasterRequests.some((req) => req.text.includes('WinCafe Yazıcı Testi')));
     assert.ok(
       zRasterRequests.some((req) =>
         req.text.includes('Bu metni okuyabiliyorsanız yazıcınız başarıyla çalışıyor!'),

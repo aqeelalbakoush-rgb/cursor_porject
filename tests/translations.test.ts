@@ -1203,6 +1203,7 @@ function itFallbackErrors(
 const RU_INTENTIONAL_IDENTICAL = new Set<string>([
   'common.appTitle',
   'common.brandName',
+  'common.logoAlt', // brand name "WinCafe"
   'dashboard.exportCsv',
   'dashboard.exportPdf',
   'dashboard.exportXlsx',
@@ -1941,6 +1942,9 @@ function hiFallbackErrors(
 /** Bengali translation safeguards. */
 const BN_INTENTIONAL_IDENTICAL = new Set<string>([
   'auth.emailPlaceholder',
+  'common.appTitle', // brand name WinCafe
+  'common.brandName',
+  'common.logoAlt',
   'dashboard.exportCsv',
   'dashboard.exportPdf',
   'nav.pos',
@@ -2263,6 +2267,9 @@ function thFallbackErrors(
 /** Nepali translation safeguards. */
 const NE_INTENTIONAL_IDENTICAL = new Set<string>([
   'auth.emailPlaceholder',
+  'common.appTitle', // brand name WinCafe
+  'common.brandName',
+  'common.logoAlt',
   'dashboard.exportCsv',
   'dashboard.exportPdf',
   'dashboard.ticketMethodCount',
@@ -2829,6 +2836,9 @@ function teFallbackErrors(
 
 /** Tamil translation safeguards: technical acronyms, email/IP/port examples, and pure format templates. */
 const TA_INTENTIONAL_IDENTICAL = new Set<string>([
+  'common.appTitle', // brand name WinCafe
+  'common.brandName',
+  'common.logoAlt',
   'auth.emailPlaceholder', // Email address example: you@business.com
   'dashboard.exportCsv', // File format label: CSV (.csv)
   'dashboard.exportPdf', // File format label: PDF (.pdf)
@@ -2887,8 +2897,9 @@ function taFallbackErrors(
 
 /** Ukrainian translation safeguards. */
 const UK_INTENTIONAL_IDENTICAL = new Set<string>([
-  'common.appTitle', // brand name: Flo
-  'common.brandName', // brand name: Flo Cafe
+  'common.appTitle', // brand name: WinCafe
+  'common.brandName', // brand name: WinCafe
+  'common.logoAlt',
   'dashboard.exportCsv', // file format label: CSV (.csv)
   'dashboard.exportPdf', // file format label: PDF (.pdf)
   'dashboard.exportXlsx', // file format label: Excel (.xlsx)

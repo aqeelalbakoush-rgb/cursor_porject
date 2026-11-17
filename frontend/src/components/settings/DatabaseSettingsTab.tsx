@@ -604,7 +604,7 @@ export function DatabaseSettingsTab({
                         <span>{t('googleDriveDestination')}:</span>
                         <Folder size={13} className="text-muted-foreground" />
                         <span className="font-mono text-[11px] text-foreground font-medium">
-                          {googleDriveStatus.destination_folder_name || 'flocafe_backups'}
+                          {googleDriveStatus.destination_folder_name || 'wincafe_backups'}
                         </span>
                         {googleDriveStatus.destination_folder_name && (
                           <button
@@ -744,7 +744,7 @@ export function DatabaseSettingsTab({
                       }
                     >
                       {googleDriveStatus.connected
-                        ? googleDriveStatus.destination_folder_name || 'flocafe_backups'
+                        ? googleDriveStatus.destination_folder_name || 'wincafe_backups'
                         : '—'}
                     </span>
                     {googleDriveStatus.connected && googleDriveStatus.destination_folder_name && (

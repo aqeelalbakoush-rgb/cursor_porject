@@ -16,7 +16,7 @@ is_safe_clear_path() {
     "$ROOT_DIR/frontend/.next"|"$ROOT_DIR/frontend/node_modules/.cache"|"$ROOT_DIR/dist"|"$ROOT_DIR/tsconfig.tsbuildinfo")
       return 0
       ;;
-    *flo-desktop*)
+    *WinCafe*)
       return 0
       ;;
     *)
@@ -52,26 +52,26 @@ clear_electron_caches() {
   local platform="${FLO_RESET_PLATFORM:-$(uname -s)}"
   case "$platform" in
     Darwin)
-      clear_path "$HOME/Library/Application Support/flo-desktop/Cache" "Electron app cache"
-      clear_path "$HOME/Library/Application Support/flo-desktop/Code Cache" "Electron code cache"
-      clear_path "$HOME/Library/Caches/flo-desktop" "Electron system cache"
+      clear_path "$HOME/Library/Application Support/WinCafe/Cache" "Electron app cache"
+      clear_path "$HOME/Library/Application Support/WinCafe/Code Cache" "Electron code cache"
+      clear_path "$HOME/Library/Caches/WinCafe" "Electron system cache"
       ;;
     Linux)
       local config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
       local cache_home="${XDG_CACHE_HOME:-$HOME/.cache}"
-      clear_path "$config_home/flo-desktop/Cache" "Electron app cache"
-      clear_path "$config_home/flo-desktop/Code Cache" "Electron code cache"
-      clear_path "$cache_home/flo-desktop" "Electron system cache"
+      clear_path "$config_home/WinCafe/Cache" "Electron app cache"
+      clear_path "$config_home/WinCafe/Code Cache" "Electron code cache"
+      clear_path "$cache_home/WinCafe" "Electron system cache"
       ;;
     MINGW*|MSYS*|CYGWIN*|Windows_NT)
       if [ -n "${APPDATA:-}" ]; then
-        clear_path "$APPDATA/flo-desktop/Cache" "Electron app cache"
-        clear_path "$APPDATA/flo-desktop/Code Cache" "Electron code cache"
+        clear_path "$APPDATA/WinCafe/Cache" "Electron app cache"
+        clear_path "$APPDATA/WinCafe/Code Cache" "Electron code cache"
       else
         echo -e "${YELLOW}Skipped: Electron app/code cache unavailable (APPDATA is not set)${NC}"
       fi
       if [ -n "${LOCALAPPDATA:-}" ]; then
-        clear_path "$LOCALAPPDATA/flo-desktop" "Electron system cache"
+        clear_path "$LOCALAPPDATA/WinCafe" "Electron system cache"
       else
         echo -e "${YELLOW}Skipped: Electron system cache unavailable (LOCALAPPDATA is not set)${NC}"
       fi
