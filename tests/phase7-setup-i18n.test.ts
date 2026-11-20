@@ -68,10 +68,10 @@ function resetDatabase(): void {
     /* first iteration */
   }
   for (const suffix of ['', '-wal', '-shm']) {
-    const file = path.join(testDir, `flo.db${suffix}`);
+    const file = path.join(testDir, `wincafe.db${suffix}`);
     if (fs.existsSync(file)) fs.unlinkSync(file);
   }
-  const marker = path.join(testDir, '.flo-db-initialized');
+  const marker = path.join(testDir, '.wincafe-db-initialized');
   if (fs.existsSync(marker)) fs.unlinkSync(marker);
   initDatabase();
 }

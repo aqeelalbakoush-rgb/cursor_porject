@@ -42,11 +42,7 @@ import {
   type RegionalSnapshot,
 } from '../countries';
 import { countryConfirmationPatch } from '../services/country-provenance';
-import {
-  cloudSync,
-  CloudRequestError,
-  normalizeCloudServerUrl,
-} from '../services/cloud-sync';
+import { cloudSync, CloudRequestError, normalizeCloudServerUrl } from '../services/cloud-sync';
 import { asyncHandler } from '../middleware/async-handler';
 import { handleRestoreFromPickedFile } from './database';
 import { getHttpRequestSignal } from '../shutdown';
@@ -1771,7 +1767,7 @@ router.post('/setup/initialize', (req: Request, res: Response) => {
     }
 
     if (!VALID_BUSINESS_TYPES.has(normalizedBusinessType)) {
-      return res.status(400).json({ error: 'FloCafe setup only supports restaurant businesses' });
+      return res.status(400).json({ error: 'WinCafe setup only supports restaurant businesses' });
     }
 
     if (!VALID_SETUP_PROFILES.has(normalizedSetupProfile)) {

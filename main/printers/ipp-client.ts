@@ -225,7 +225,7 @@ export function formatIppStatusError(
   statusMessage?: string,
 ): string {
   if (statusCode === IPP_STATUS_CLIENT_ERROR_NOT_FOUND) {
-    return `Printer queue "${printerName}" was not found in macOS Printers & Scanners. Add the USB printer in System Settings > Printers & Scanners and make sure the printer name in FloCafe matches the CUPS queue name.`;
+    return `Printer queue "${printerName}" was not found in macOS Printers & Scanners. Add the USB printer in System Settings > Printers & Scanners and make sure the printer name in WinCafe matches the CUPS queue name.`;
   }
   if (statusCode === IPP_STATUS_SERVER_ERROR_NOT_ACCEPTING_JOBS) {
     return `Printer "${printerName}" is not accepting jobs`;
@@ -386,7 +386,7 @@ export async function ippGetPrinters(signal?: AbortSignal): Promise<IppAttribute
     '/',
     OP_CUPS_GET_PRINTERS,
     [
-      { tag: VALUE_TAG.nameWithoutLanguage, name: 'requesting-user-name', values: ['flocafe'] },
+      { tag: VALUE_TAG.nameWithoutLanguage, name: 'requesting-user-name', values: ['wincafe'] },
       REQUESTED_PRINTER_ATTRIBUTES,
     ],
     undefined,
@@ -401,7 +401,7 @@ export async function ippGetDefaultPrinterName(signal?: AbortSignal): Promise<st
     '/',
     OP_CUPS_GET_DEFAULT,
     [
-      { tag: VALUE_TAG.nameWithoutLanguage, name: 'requesting-user-name', values: ['flocafe'] },
+      { tag: VALUE_TAG.nameWithoutLanguage, name: 'requesting-user-name', values: ['wincafe'] },
       REQUESTED_PRINTER_ATTRIBUTES,
     ],
     undefined,
@@ -439,7 +439,7 @@ export async function ippGetPrinterAttributes(
         name: 'printer-uri',
         values: [`ipp://localhost/printers/${encodeURIComponent(printerName)}`],
       },
-      { tag: VALUE_TAG.nameWithoutLanguage, name: 'requesting-user-name', values: ['flocafe'] },
+      { tag: VALUE_TAG.nameWithoutLanguage, name: 'requesting-user-name', values: ['wincafe'] },
       {
         tag: VALUE_TAG.keyword,
         name: 'requested-attributes',
@@ -499,8 +499,8 @@ export async function ippPrintRaw(
         name: 'printer-uri',
         values: [`ipp://localhost/printers/${encodeURIComponent(printerName)}`],
       },
-      { tag: VALUE_TAG.nameWithoutLanguage, name: 'requesting-user-name', values: ['flocafe'] },
-      { tag: VALUE_TAG.nameWithoutLanguage, name: 'job-name', values: ['FloCafe receipt'] },
+      { tag: VALUE_TAG.nameWithoutLanguage, name: 'requesting-user-name', values: ['wincafe'] },
+      { tag: VALUE_TAG.nameWithoutLanguage, name: 'job-name', values: ['WinCafe receipt'] },
       {
         tag: VALUE_TAG.mimeMediaType,
         name: 'document-format',

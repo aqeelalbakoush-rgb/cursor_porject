@@ -388,7 +388,7 @@ function main() {
   for (const suffix of ['', '-wal', '-shm', '-journal']) {
     fs.rmSync(`${liveDbPath}${suffix}`, { force: true });
   }
-  fs.rmSync(path.join(testDir, '.flo-db-initialized'), { force: true });
+  fs.rmSync(path.join(testDir, '.wincafe-db-initialized'), { force: true });
   fs.rmSync(path.join(testDir, 'backups'), { recursive: true, force: true });
   const preUpgradeV98Db = buildIdealSchemaDb(98);
   try {

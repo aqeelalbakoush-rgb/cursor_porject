@@ -64,13 +64,13 @@ describe('Issue #263: Phone Normalization, Validation, and Privacy', () => {
     try {
       closeDatabase();
     } catch {}
-    const defaultDb = path.join(tempDir, 'flo.db');
+    const defaultDb = path.join(tempDir, 'wincafe.db');
     if (fs.existsSync(defaultDb)) fs.unlinkSync(defaultDb);
-    const wal = path.join(tempDir, 'flo.db-wal');
+    const wal = path.join(tempDir, 'wincafe.db-wal');
     if (fs.existsSync(wal)) fs.unlinkSync(wal);
-    const shm = path.join(tempDir, 'flo.db-shm');
+    const shm = path.join(tempDir, 'wincafe.db-shm');
     if (fs.existsSync(shm)) fs.unlinkSync(shm);
-    const marker = path.join(tempDir, '.flo-db-initialized');
+    const marker = path.join(tempDir, '.wincafe-db-initialized');
     if (fs.existsSync(marker)) fs.unlinkSync(marker);
     initTestDb();
     ownerAuth = seedOwnerUser(getDatabase());

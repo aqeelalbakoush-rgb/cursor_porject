@@ -276,9 +276,9 @@ if (args[0] === 'ls') {
   try {
     const darwinHome = path.join(tmpDir, 'darwin-home');
     const darwinPaths = [
-      path.join(darwinHome, 'Library/Application Support/flo-desktop/Cache'),
-      path.join(darwinHome, 'Library/Application Support/flo-desktop/Code Cache'),
-      path.join(darwinHome, 'Library/Caches/flo-desktop'),
+      path.join(darwinHome, 'Library/Application Support/WinCafe/Cache'),
+      path.join(darwinHome, 'Library/Application Support/WinCafe/Code Cache'),
+      path.join(darwinHome, 'Library/Caches/WinCafe'),
     ];
     darwinPaths.forEach(mkdirp);
     const darwinResult = runReset('Darwin', { HOME: darwinHome });
@@ -314,9 +314,9 @@ if (args[0] === 'ls') {
     const linuxConfigHome = path.join(tmpDir, 'linux-config');
     const linuxCacheHome = path.join(tmpDir, 'linux-cache');
     const linuxPaths = [
-      path.join(linuxConfigHome, 'flo-desktop/Cache'),
-      path.join(linuxConfigHome, 'flo-desktop/Code Cache'),
-      path.join(linuxCacheHome, 'flo-desktop'),
+      path.join(linuxConfigHome, 'WinCafe/Cache'),
+      path.join(linuxConfigHome, 'WinCafe/Code Cache'),
+      path.join(linuxCacheHome, 'WinCafe'),
     ];
     linuxPaths.forEach(mkdirp);
     const linuxResult = runReset('Linux', {
@@ -340,9 +340,9 @@ if (args[0] === 'ls') {
     const windowsAppData = path.join(tmpDir, 'windows-appdata');
     const windowsLocalAppData = path.join(tmpDir, 'windows-localappdata');
     const windowsPaths = [
-      path.join(windowsAppData, 'flo-desktop/Cache'),
-      path.join(windowsAppData, 'flo-desktop/Code Cache'),
-      path.join(windowsLocalAppData, 'flo-desktop'),
+      path.join(windowsAppData, 'WinCafe/Cache'),
+      path.join(windowsAppData, 'WinCafe/Code Cache'),
+      path.join(windowsLocalAppData, 'WinCafe'),
     ];
     windowsPaths.forEach(mkdirp);
     const windowsResult = runReset('Windows_NT', {

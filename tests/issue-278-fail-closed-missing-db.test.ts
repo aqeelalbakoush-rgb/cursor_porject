@@ -39,7 +39,7 @@ function removeDbFiles(dbPath: string): void {
 async function run() {
   console.log('Testing fail-closed behavior for a missing production database...');
   const dbPath = getDbPath();
-  const markerPath = path.join(testDir, '.flo-db-initialized');
+  const markerPath = path.join(testDir, '.wincafe-db-initialized');
 
   try {
     // 1. Fresh install: no marker yet, no db yet — must succeed normally and

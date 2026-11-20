@@ -1,7 +1,7 @@
 #!/bin/bash
-# Flo Cafe — standalone macOS uninstaller
+# WinCafe — standalone macOS uninstaller
 #
-# Removes the Flo Cafe app and its support files (preferences, caches, logs,
+# Removes the WinCafe app and its support files (preferences, caches, logs,
 # auto-update state). Your business data (SQLite database, backups, Master
 # PIN) is only deleted if you say so: interactively, you'll be asked
 # Delete or Keep; non-interactively, pass --purge-data to delete it or
@@ -19,8 +19,8 @@
 
 set -euo pipefail
 
-APP_NAME="Flo Cafe"
-BUNDLE_ID="com.flo.desktop"
+APP_NAME="WinCafe"
+BUNDLE_ID="com.wintech.wincafe"
 PURGE_DATA=0
 DRY_RUN=0
 
@@ -59,7 +59,7 @@ remove_path() {
   fi
   # `set -e` would otherwise exit here and make the retry loop unreachable.
   rm -rf "$target" || true
-  # rm -f masks failures (e.g. a file still open by a not-fully-quit Flo Cafe
+  # rm -f masks failures (e.g. a file still open by a not-fully-quit WinCafe
   # process) -- verify instead of just trusting it and reporting success.
   for _ in 1 2 3 4 5 6; do
     if [ ! -e "$target" ] && [ ! -L "$target" ]; then break; fi
@@ -68,16 +68,16 @@ remove_path() {
   done
   if [ -e "$target" ] || [ -L "$target" ]; then
     echo -e "  \033[33mcould NOT fully remove $target -- some files are still in use.\033[0m"
-    echo -e "  \033[33mmake sure Flo Cafe is completely quit (check Activity Monitor), then re-run this script.\033[0m"
+    echo -e "  \033[33mmake sure WinCafe is completely quit (check Activity Monitor), then re-run this script.\033[0m"
   else
     log "removed $target"
   fi
 }
 
-step "Flo Cafe uninstaller (macOS)"
+step "WinCafe uninstaller (macOS)"
 if [ "$DRY_RUN" -eq 1 ]; then log "(dry run — nothing will actually be deleted)"; fi
 
-step "Quitting Flo Cafe if it's running…"
+step "Quitting WinCafe if it's running…"
 if pgrep -x "$APP_NAME" >/dev/null 2>&1; then
   run osascript -e "tell application \"$APP_NAME\" to quit" || true
   sleep 1
@@ -116,13 +116,9 @@ remove_path "$HOME/Library/Saved Application State/$BUNDLE_ID.savedState"
 remove_path "$HOME/Library/HTTPStorages/$BUNDLE_ID"
 remove_path "$HOME/Library/WebKit/$BUNDLE_ID"
 
-# Electron's default userData dir comes from package.json's top-level "name"
-# ("flo-desktop"), not the electron-builder "productName" ("Flo Cafe") used
-# for the .app bundle -- so the real data lives under "flo-desktop", not
-# under "$APP_NAME". Sweep both so stray data from either naming never
-# survives an uninstall.
-DATA_PATH="$HOME/Library/Application Support/flo-desktop"
-LEGACY_DATA_PATH="$HOME/Library/Application Support/$APP_NAME"
+# WinCafe stores its database under its own Application Support folder.
+# Do not remove FloCafe's "flo-desktop" profile.
+DATA_PATH="$HOME/Library/Application Support/WinCafe"
 step "Your business data"
 log "database, backups, and Master PIN live at:"
 log "  $DATA_PATH"
@@ -144,7 +140,6 @@ fi
 if [ "$PURGE_DATA" -eq 1 ]; then
   step "Removing your business data…"
   remove_path "$DATA_PATH"
-  remove_path "$LEGACY_DATA_PATH"
 else
   log "keeping your data"
 fi

@@ -1,10 +1,11 @@
-const CACHE_NAME = 'flo-v19';
+const CACHE_NAME = 'wincafe-v1';
 const PRECACHE_URLS = [
   '/dashboard',
   '/pos',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
+  '/logo.png',
   '/logo.svg',
 ];
 

@@ -18,7 +18,7 @@ const cases: Array<{ name: string; text: string; keeps: string[] }> = [
   },
   {
     name: 'CUPS queue missing, from the IPP status',
-    text: `Printer queue "${QUEUE}" was not found in macOS Printers & Scanners. Add the USB printer in System Settings > Printers & Scanners and make sure the printer name in FloCafe matches the CUPS queue name.`,
+    text: `Printer queue "${QUEUE}" was not found in macOS Printers & Scanners. Add the USB printer in System Settings > Printers & Scanners and make sure the printer name in WinCafe matches the CUPS queue name.`,
     keeps: ['was not found', 'CUPS queue name'],
   },
   {

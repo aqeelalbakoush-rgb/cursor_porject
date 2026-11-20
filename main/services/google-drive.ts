@@ -45,7 +45,7 @@ export function setQrMenuDriveClientFactoryForTests(
 }
 
 export const DRIVE_FILE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
-export const DRIVE_BACKUP_FOLDER_NAME = 'FloCafe Backups';
+export const DRIVE_BACKUP_FOLDER_NAME = 'WinCafe Backups';
 export const DRIVE_RESTORE_CONFIRMATION = 'RESTORE GOOGLE DRIVE BACKUP';
 export const DRIVE_WARNING_SETTING = 'google_drive_warning_acknowledged';
 
@@ -1869,7 +1869,7 @@ class GoogleDriveService {
           !file.trashed &&
           file.mimeType === 'application/vnd.google-apps.folder' &&
           file.appProperties?.flo_installation_id === marker &&
-          file.appProperties?.flo_destination_kind === 'flocafe_menu' &&
+          file.appProperties?.flo_destination_kind === 'wincafe_menu' &&
           file.capabilities?.canAddChildren !== false
         )
           return storedId;
@@ -1890,7 +1890,7 @@ class GoogleDriveService {
     const existing = (found.data.files || []).find(
       (file) =>
         file.id &&
-        file.appProperties?.flo_destination_kind === 'flocafe_menu' &&
+        file.appProperties?.flo_destination_kind === 'wincafe_menu' &&
         file.capabilities?.canAddChildren !== false,
     );
     if (existing?.id && safeId(existing.id)) {
@@ -1902,7 +1902,7 @@ class GoogleDriveService {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '_')
       .replace(/^_+|_+$/g, '');
-    const folderName = sanitized ? `${sanitized}_flocafe_menu` : 'flocafe_menu';
+    const folderName = sanitized ? `${sanitized}_wincafe_menu` : 'wincafe_menu';
     const response = await driveClient.files.create(
       {
         requestBody: {
@@ -1911,7 +1911,7 @@ class GoogleDriveService {
           appProperties: {
             flo_marker_version: MARKER_VERSION,
             flo_installation_id: marker,
-            flo_destination_kind: 'flocafe_menu',
+            flo_destination_kind: 'wincafe_menu',
           },
         },
         fields: 'id',
@@ -3376,7 +3376,7 @@ class GoogleDriveService {
           file.id &&
           safeId(file.id) &&
           file.capabilities?.canAddChildren !== false &&
-          file.appProperties?.flo_destination_kind !== 'flocafe_menu'
+          file.appProperties?.flo_destination_kind !== 'wincafe_menu'
         ) {
           return { id: file.id, name: file.name || this.resolveBackupFolderName(), owned: true };
         }
@@ -3413,7 +3413,7 @@ class GoogleDriveService {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '_')
       .replace(/^_+|_+$/g, '');
-    return sanitized ? `${sanitized}_flocafe_backups` : 'flocafe_backups';
+    return sanitized ? `${sanitized}_wincafe_backups` : 'wincafe_backups';
   }
 
   private resolveRemoteFileName(snapshot: SnapshotDescriptor, kind: BackupKind): string {
@@ -3423,7 +3423,7 @@ class GoogleDriveService {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '_')
       .replace(/^_+|_+$/g, '');
-    const prefix = sanitized ? `${sanitized}_backup` : 'flo_backup';
+    const prefix = sanitized ? `${sanitized}_backup` : 'wincafe_backup';
     const timestamp = (snapshot.backupCreatedAt || new Date().toISOString())
       .replace(/[:.]/g, '-')
       .replace(/Z$/, '');
@@ -3676,7 +3676,7 @@ class GoogleDriveService {
       (fileSize === null || fileSize === bytes);
     return {
       id: String(file.id),
-      name: String(file.name || 'FloCafe backup'),
+      name: String(file.name || 'WinCafe backup'),
       kind: properties.flo_backup_kind as BackupKind,
       created_at: String(file.createdTime || properties.flo_backup_created_at || ''),
       bytes,
@@ -4021,8 +4021,8 @@ class GoogleDriveService {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(
           error || !code || !stateMatches
-            ? '<html><body>Google Drive connection failed. Close this window and return to FloCafe.</body></html>'
-            : '<html><body>Google Drive connected. Close this window and return to FloCafe.</body></html>',
+            ? '<html><body>Google Drive connection failed. Close this window and return to WinCafe.</body></html>'
+            : '<html><body>Google Drive connected. Close this window and return to WinCafe.</body></html>',
         );
         if (error) return finish(() => reject(createDriveError('reauth_required')));
         if (!code || !stateMatches)

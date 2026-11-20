@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-  Flo Cafe -- standalone Windows uninstaller.
+  WinCafe -- standalone Windows uninstaller.
 
 .DESCRIPTION
-  Removes the Flo Cafe app, its shortcuts, and its registry uninstall entry.
-  The Keep/Delete decision is made before Flo Cafe is closed so an active
+  Removes the WinCafe app, its shortcuts, and its registry uninstall entry.
+  The Keep/Delete decision is made before WinCafe is closed so an active
   database write is never interrupted before the user chooses what to do with
   their data. The app is asked to close gracefully before a bounded force
   escalation. Cleanup is verified and the script reports partial cleanup when
@@ -37,8 +37,8 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$script:AppName = 'Flo Cafe'
-$script:AppProcessName = 'Flo Cafe'
+$script:AppName = 'WinCafe'
+$script:AppProcessName = 'WinCafe'
 $script:RemovalAttempts = 6
 $script:RemovalRetryDelayMilliseconds = 500
 $script:AppGracefulCloseTimeoutSeconds = 10
@@ -119,7 +119,7 @@ function Invoke-Removal($path, $description) {
   $message = "could NOT fully remove $description at $path"
   if ($lastError) { $message += ": $lastError" }
   Mark-Partial $message
-  Write-Warn 'make sure Flo Cafe is completely closed (check Task Manager for "Flo Cafe.exe", it may be hiding in the system tray) and re-run this script.'
+  Write-Warn 'make sure WinCafe is completely closed (check Task Manager for "WinCafe.exe", it may be hiding in the system tray) and re-run this script.'
   return New-RemovalResult $path $description $true $false $false
 }
 
@@ -131,7 +131,7 @@ function Get-FloProcesses {
       return @()
     }
     $script:ProcessInspectionFailed = $true
-    Mark-Partial ("could not inspect running Flo Cafe processes: {0}" -f $_.Exception.Message)
+    Mark-Partial ("could not inspect running WinCafe processes: {0}" -f $_.Exception.Message)
     return $null
   }
 }
@@ -140,11 +140,11 @@ function Confirm-FloCafeStopped {
   if ($script:DryRun) { return $true }
   $activeProcesses = @(Get-FloProcesses)
   if ($script:ProcessInspectionFailed) {
-    Mark-Partial 'could not verify that Flo Cafe is stopped; skipping destructive cleanup to protect active writes'
+    Mark-Partial 'could not verify that WinCafe is stopped; skipping destructive cleanup to protect active writes'
     return $false
   }
   if ($activeProcesses.Count -gt 0) {
-    Mark-Partial 'Flo Cafe is still running; skipping destructive cleanup to protect active writes'
+    Mark-Partial 'WinCafe is still running; skipping destructive cleanup to protect active writes'
     return $false
   }
   return $true
@@ -385,14 +385,14 @@ function Close-FloCafe {
     return $true
   }
 
-  Write-Warn ("Flo Cafe did not close gracefully within {0} seconds; forcing it to close." -f $script:AppGracefulCloseTimeoutSeconds)
+  Write-Warn ("WinCafe did not close gracefully within {0} seconds; forcing it to close." -f $script:AppGracefulCloseTimeoutSeconds)
   $remaining = @(Get-FloProcesses)
   if ($script:ProcessInspectionFailed) { return $false }
   foreach ($process in $remaining) {
     try {
       Stop-Process -Id $process.Id -Force -ErrorAction Stop
     } catch {
-      Mark-Partial ("could not force-close Flo Cafe process {0}: {1}" -f $process.Id, $_.Exception.Message)
+      Mark-Partial ("could not force-close WinCafe process {0}: {1}" -f $process.Id, $_.Exception.Message)
     }
   }
 
@@ -401,7 +401,7 @@ function Close-FloCafe {
     return $true
   }
 
-  Mark-Partial ("could not confirm that Flo Cafe closed after the {0}-second force wait; locked files may remain" -f $script:AppForceCloseTimeoutSeconds)
+  Mark-Partial ("could not confirm that WinCafe closed after the {0}-second force wait; locked files may remain" -f $script:AppForceCloseTimeoutSeconds)
   return $false
 }
 
@@ -431,7 +431,7 @@ function Invoke-RegistryRemoval($entry) {
   $description = 'registry uninstall entry'
   if (-not (Confirm-NoActiveUninstallWork)) { return $false }
   if ([string]::IsNullOrWhiteSpace($registryPath)) {
-    Mark-Partial 'could not determine the registry path for the Flo Cafe uninstall entry'
+    Mark-Partial 'could not determine the registry path for the WinCafe uninstall entry'
     return $false
   }
 
@@ -481,7 +481,7 @@ function Test-FloUninstallerIsTrusted {
   )
 
   # Never launch a registry-selected executable unless it is actually part of
-  # Flo Cafe: it must be named like an NSIS uninstaller and live either under a
+  # WinCafe: it must be named like an NSIS uninstaller and live either under a
   # known install root or directly inside the registry entry's own install
   # directory. Existence alone is not identity (GHSA-42p9-xf35-xfmp).
   if ([string]::IsNullOrWhiteSpace($UninstallerExe)) { return $false }
@@ -504,7 +504,6 @@ function Test-FloUninstallerIsTrusted {
   $roots = New-Object 'System.Collections.Generic.List[string]'
   if (-not [string]::IsNullOrWhiteSpace([string]$env:LOCALAPPDATA)) {
     [void]$roots.Add((Join-Path $env:LOCALAPPDATA "Programs\$($script:AppName)"))
-    [void]$roots.Add((Join-Path $env:LOCALAPPDATA 'Programs\flo-desktop'))
   }
   if (-not [string]::IsNullOrWhiteSpace([string]$env:ProgramFiles)) {
     [void]$roots.Add((Join-Path $env:ProgramFiles $script:AppName))
@@ -553,13 +552,12 @@ function Invoke-FloCafeUninstall {
   $script:ChildProcessInspectionFailed = $false
 
   $userDataPath = $null
-  $legacyUserDataPath = $null
   if (-not [string]::IsNullOrWhiteSpace([string]$env:APPDATA)) {
-    $userDataPath = Join-Path $env:APPDATA 'flo-desktop'
-    $legacyUserDataPath = Join-Path $env:APPDATA $script:AppName
+    # WinCafe's profile only. Do not touch %APPDATA%\flo-desktop (FloCafe).
+    $userDataPath = Join-Path $env:APPDATA 'WinCafe'
   }
 
-  Write-Step 'Flo Cafe uninstaller (Windows)'
+  Write-Step 'WinCafe uninstaller (Windows)'
   if ($script:DryRun) { Write-Log '(dry run -- nothing will actually be deleted)' }
 
   # Resolve this before any process lookup or termination. Keeping data must be
@@ -574,10 +572,10 @@ function Invoke-FloCafeUninstall {
   Resolve-DataDecision $PurgeData $DryRun
 
   # ── Quit the app if it's running ─────────────────────────────────────────
-  Write-Step 'Closing Flo Cafe if it is running...'
+  Write-Step 'Closing WinCafe if it is running...'
   $appClosed = [bool](Close-FloCafe)
   if (-not $appClosed -and -not $script:DryRun) {
-    Write-Warn 'Flo Cafe did not close completely; destructive cleanup will be skipped while it is running.'
+    Write-Warn 'WinCafe did not close completely; destructive cleanup will be skipped while it is running.'
   }
 
   # ── Look up the registry uninstall entry (covers both per-user and ──────
@@ -638,10 +636,10 @@ function Invoke-FloCafeUninstall {
       }
 
       if ($uninstallerExe -and $uninstallerExists -and -not (Test-FloUninstallerIsTrusted -UninstallerExe $uninstallerExe -InstallLocation $entryInstallLocation)) {
-        Write-Warn "refusing to run an unverified executable at `"$uninstallerExe`" -- it is not a known Flo Cafe install location; falling back to manual cleanup"
+        Write-Warn "refusing to run an unverified executable at `"$uninstallerExe`" -- it is not a known WinCafe install location; falling back to manual cleanup"
       } elseif ($uninstallerExe -and $uninstallerExists) {
         Write-Step "Running the app's own uninstaller silently..."
-        # /S first, then whatever came from the registry (e.g. /D=C:\Program Files\Flo Cafe):
+        # /S first, then whatever came from the registry (e.g. /D=C:\Program Files\WinCafe):
         # NSIS requires /D=<path> to be the LAST parameter and takes everything after
         # it, unquoted, as the literal install path -- putting /S after it would get
         # swallowed into that path instead of being read as a flag.
@@ -689,7 +687,7 @@ function Invoke-FloCafeUninstall {
             Write-Warn 'falling back to manual cleanup below'
           }
         } else {
-          Write-Warn "skipping the app's own uninstaller because Flo Cafe or its child uninstaller is still running"
+          Write-Warn "skipping the app's own uninstaller because WinCafe or its child uninstaller is still running"
         }
       } elseif ($uninstallerExe) {
         Write-Warn "could not find the app's own uninstaller at $uninstallerExe -- falling back to manual cleanup"
@@ -701,7 +699,7 @@ function Invoke-FloCafeUninstall {
 
   $destructiveCleanupAllowed = Confirm-NoActiveUninstallWork
   if (-not $destructiveCleanupAllowed) {
-    Write-Warn 'Skipping app files, registry, and business-data removal until Flo Cafe is completely closed.'
+    Write-Warn 'Skipping app files, registry, and business-data removal until WinCafe is completely closed.'
   }
 
   if ($destructiveCleanupAllowed) {
@@ -711,10 +709,9 @@ function Invoke-FloCafeUninstall {
     $candidatePaths = @()
     # Never recursively delete an arbitrary registry-supplied path. The app's own
     # uninstaller handles custom install locations; fallback cleanup is restricted
-    # to the known Flo Cafe install roots below.
+    # to the known WinCafe install roots below.
     if (-not [string]::IsNullOrWhiteSpace([string]$env:LOCALAPPDATA)) {
       $candidatePaths += Join-Path $env:LOCALAPPDATA "Programs\$($script:AppName)"
-      $candidatePaths += Join-Path $env:LOCALAPPDATA 'Programs\flo-desktop'
     }
     if (-not [string]::IsNullOrWhiteSpace([string]$env:ProgramFiles)) {
       $candidatePaths += Join-Path $env:ProgramFiles $script:AppName
@@ -769,17 +766,12 @@ function Invoke-FloCafeUninstall {
     }
 
     # ── User data (database, backups, Master PIN) ─────────────────────────────
-    # Electron's default userData dir comes from package.json's top-level "name"
-    # ("flo-desktop"), not the electron-builder "productName" ("Flo Cafe") used
-    # for the installer/shortcuts -- so the real data lives under "flo-desktop",
-    # not under "$script:AppName". Sweep both so stray data from either naming
-    # never survives an uninstall.
+    # Profile is %APPDATA%\WinCafe. Never delete FloCafe's flo-desktop folder.
     if ($script:PurgeData) {
       Write-Step 'Removing your business data...'
       Write-Log 'this is irreversible -- there is no undo'
       if ($userDataPath) {
         [void](Invoke-Removal $userDataPath 'user data')
-        [void](Invoke-Removal $legacyUserDataPath 'legacy user data')
       } else {
         Mark-Partial 'business data was requested for deletion, but APPDATA is unavailable; no data path was removed'
       }
@@ -787,7 +779,7 @@ function Invoke-FloCafeUninstall {
       Write-Log 'keeping your data'
     }
   } else {
-    Write-Log 'keeping your data because destructive cleanup was skipped while Flo Cafe was running'
+    Write-Log 'keeping your data because destructive cleanup was skipped while WinCafe was running'
   }
 
   if ($script:DryRun) {
@@ -801,8 +793,8 @@ function Invoke-FloCafeUninstall {
     Write-Log 'cleanup completed successfully; all discovered app-owned targets were verified absent'
   } else {
     Write-Step 'Partial cleanup.'
-    Write-Warn 'Some Flo Cafe files, processes, or registry entries could not be removed or verified.'
-    Write-Warn 'Close Flo Cafe completely and re-run this script to finish cleanup.'
+    Write-Warn 'Some WinCafe files, processes, or registry entries could not be removed or verified.'
+    Write-Warn 'Close WinCafe completely and re-run this script to finish cleanup.'
   }
 
   return [pscustomobject]@{

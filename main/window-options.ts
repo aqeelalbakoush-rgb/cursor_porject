@@ -64,7 +64,7 @@ export function createMainWindow(
   // cannot drop the generated preload or the isolation settings it enables.
   const { webPreferences: webPreferencesOverrides, ...windowOptions } = resolvedOptions ?? {};
   return new BrowserWindowConstructor({
-    name: 'flo-main',
+    name: 'wincafe-main',
     windowStatePersistence: true,
     width: 1400,
     height: 900,

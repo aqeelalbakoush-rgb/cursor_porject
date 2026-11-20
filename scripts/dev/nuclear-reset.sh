@@ -6,7 +6,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$ROOT_DIR"
 
 if [ ! -f "$ROOT_DIR/package.json" ]; then
-  echo "Error: nuclear-reset.sh must run from a FloCafe checkout." >&2
+  echo "Error: nuclear-reset.sh must run from a WinCafe checkout." >&2
   exit 1
 fi
 
@@ -16,7 +16,7 @@ is_safe_clear_path() {
     "$ROOT_DIR/frontend/.next"|"$ROOT_DIR/frontend/node_modules/.cache"|"$ROOT_DIR/dist"|"$ROOT_DIR/tsconfig.tsbuildinfo")
       return 0
       ;;
-    *flo-desktop*)
+    *WinCafe*)
       return 0
       ;;
     *)
@@ -52,26 +52,26 @@ clear_electron_caches() {
   local platform="${FLO_RESET_PLATFORM:-$(uname -s)}"
   case "$platform" in
     Darwin)
-      clear_path "$HOME/Library/Application Support/flo-desktop/Cache" "Electron app cache"
-      clear_path "$HOME/Library/Application Support/flo-desktop/Code Cache" "Electron code cache"
-      clear_path "$HOME/Library/Caches/flo-desktop" "Electron system cache"
+      clear_path "$HOME/Library/Application Support/WinCafe/Cache" "Electron app cache"
+      clear_path "$HOME/Library/Application Support/WinCafe/Code Cache" "Electron code cache"
+      clear_path "$HOME/Library/Caches/WinCafe" "Electron system cache"
       ;;
     Linux)
       local config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
       local cache_home="${XDG_CACHE_HOME:-$HOME/.cache}"
-      clear_path "$config_home/flo-desktop/Cache" "Electron app cache"
-      clear_path "$config_home/flo-desktop/Code Cache" "Electron code cache"
-      clear_path "$cache_home/flo-desktop" "Electron system cache"
+      clear_path "$config_home/WinCafe/Cache" "Electron app cache"
+      clear_path "$config_home/WinCafe/Code Cache" "Electron code cache"
+      clear_path "$cache_home/WinCafe" "Electron system cache"
       ;;
     MINGW*|MSYS*|CYGWIN*|Windows_NT)
       if [ -n "${APPDATA:-}" ]; then
-        clear_path "$APPDATA/flo-desktop/Cache" "Electron app cache"
-        clear_path "$APPDATA/flo-desktop/Code Cache" "Electron code cache"
+        clear_path "$APPDATA/WinCafe/Cache" "Electron app cache"
+        clear_path "$APPDATA/WinCafe/Code Cache" "Electron code cache"
       else
         echo -e "${YELLOW}Skipped: Electron app/code cache unavailable (APPDATA is not set)${NC}"
       fi
       if [ -n "${LOCALAPPDATA:-}" ]; then
-        clear_path "$LOCALAPPDATA/flo-desktop" "Electron system cache"
+        clear_path "$LOCALAPPDATA/WinCafe" "Electron system cache"
       else
         echo -e "${YELLOW}Skipped: Electron system cache unavailable (LOCALAPPDATA is not set)${NC}"
       fi
@@ -120,7 +120,7 @@ fi
 
 if [ "$CONFIRMED" = "false" ]; then
   if [ -t 0 ]; then
-    read -p "WARNING: This will stop Flo processes, clear build/app caches, and rebuild. Continue? (y/N) " -n 1 -r
+    read -p "WARNING: This will stop WinCafe processes, clear build/app caches, and rebuild. Continue? (y/N) " -n 1 -r
     echo ""
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
       echo "Nuclear reset cancelled."
@@ -133,21 +133,21 @@ if [ "$CONFIRMED" = "false" ]; then
 fi
 
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}    FloCafe - Development Reset         ${NC}"
+echo -e "${BLUE}    WinCafe - Development Reset         ${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 
-echo -e "${BLUE}Step 1: Killing Flo processes${NC}"
+echo -e "${BLUE}Step 1: Killing WinCafe processes${NC}"
 echo "----------------------------------------"
 
 if [ "$DRY_RUN" = "true" ]; then
-  echo -e "${YELLOW}Dry run: would stop Flo processes on ports 3000, 3001, 3002, 3003, 3088${NC}"
+  echo -e "${YELLOW}Dry run: would stop WinCafe processes on ports 3000, 3001, 3002, 3003, 3088${NC}"
 elif [ "$CACHE_ONLY" = "true" ]; then
   echo -e "${YELLOW}Cache-only mode: process stop skipped${NC}"
 else
   node kill-ports.js 3000 3001 3002 3003 3088
   sleep 1
-  echo -e "${GREEN}Flo processes stopped${NC}"
+  echo -e "${GREEN}WinCafe processes stopped${NC}"
 fi
 
 echo ""

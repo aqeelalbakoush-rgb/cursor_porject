@@ -66,7 +66,7 @@ import {
   restoreCompatibleBackupForDowngrade,
   SchemaVersionMismatchError,
 } from '../main/db';
-import { FLOCAFE_RELEASES_URL, runDowngradeRecoveryFlow } from '../main/downgrade-recovery';
+import { runDowngradeRecoveryFlow } from '../main/downgrade-recovery';
 import { getUserAuthStatus, isTokenRevoked, revokeToken } from '../main/middleware/security';
 import {
   clearJWTSecretCache,
@@ -634,7 +634,7 @@ async function run(): Promise<void> {
     const rejectedByName = new Map(discovery.corruptOrInvalid.map((item) => [item.fileName, item]));
     assert.equal(
       rejectedByName.get(path.basename(preV0BackupPath))?.detail,
-      'Backup does not contain an initialized Flo Cafe schema',
+      'Backup does not contain an initialized WinCafe schema',
       'first-boot pre-v0 snapshot reports uninitialized schema rather than header mismatch',
     );
     assert.equal(rejectedByName.get(path.basename(preV0BackupPath))?.schemaVersion, null);
@@ -648,21 +648,28 @@ async function run(): Promise<void> {
     //     Open Backups Folder, and Exit available without modifying any files.
     const openedUrls: string[] = [];
     const openedPaths: string[] = [];
-    const noCompatibleDialogs: { title?: string; detail?: string; buttons?: string[] }[] = [];
+    const noCompatibleDialogs: {
+      title?: string;
+      message?: string;
+      detail?: string;
+      buttons?: string[];
+    }[] = [];
     const noCompatibleOutcome = await runDowngradeRecoveryFlow(caughtWalMismatch!, {
       appVersion: '3.13.14',
       dialog: {
         showMessageBox: async (options: any) => {
           noCompatibleDialogs.push({
             title: options.title,
+            message: options.message,
             detail: options.detail,
             buttons: options.buttons,
           });
-          // Main screen -> Restore Compatible Backup (2), then Empty screen -> Open Backups Folder (1),
-          // then Main screen -> Get Latest Version (0).
+          // Main -> Restore, empty -> Open Backups, main -> Get Latest, notice -> OK, main -> Exit.
           if (noCompatibleDialogs.length === 1) return { response: 2, checkboxChecked: false };
           if (noCompatibleDialogs.length === 2) return { response: 1, checkboxChecked: false };
-          return { response: 0, checkboxChecked: false };
+          if (noCompatibleDialogs.length === 3) return { response: 0, checkboxChecked: false };
+          if (noCompatibleDialogs.length === 4) return { response: 0, checkboxChecked: false };
+          return { response: 3, checkboxChecked: false };
         },
       } as any,
       shell: {
@@ -688,24 +695,24 @@ async function run(): Promise<void> {
       getBackupDir,
       getDbPath,
     });
-    assert.deepEqual(noCompatibleOutcome, {
-      outcome: 'opened_releases',
-      url: FLOCAFE_RELEASES_URL,
-    });
+    assert.deepEqual(noCompatibleOutcome, { outcome: 'exit' });
+    assert.equal(noCompatibleDialogs[3]?.title, 'Update Download Unavailable');
+    assert.match(
+      noCompatibleDialogs[3]?.message || '',
+      /does not have an update download page configured/,
+    );
+    assert.equal((noCompatibleDialogs[3]?.message || '').includes('github.com'), false);
+    assert.equal((noCompatibleDialogs[3]?.detail || '').includes('github.com'), false);
     assert.equal(noCompatibleDialogs[1]?.title, 'No Compatible Backup Available');
     assert.deepEqual(noCompatibleDialogs[1]?.buttons, [
       'Get Latest Version',
       'Open Backups Folder',
       'Exit',
     ]);
-    assert.match(noCompatibleDialogs[1]?.detail || '', /require a newer Flo Cafe version/);
+    assert.match(noCompatibleDialogs[1]?.detail || '', /require a newer WinCafe version/);
     assert.match(noCompatibleDialogs[1]?.detail || '', /failed integrity or schema validation/);
     assert.deepEqual(openedPaths, [backupDir], 'Open Backups Folder reveals backupDir');
-    assert.deepEqual(
-      openedUrls,
-      [FLOCAFE_RELEASES_URL],
-      'Get Latest Version opens official releases URL',
-    );
+    assert.deepEqual(openedUrls, [], 'Get Latest Version does not open a download page');
     assert.equal(
       sha256File(dbPath),
       walHashes.dbSha,
@@ -787,7 +794,8 @@ async function run(): Promise<void> {
               return { response: 0, checkboxChecked: false };
             }
             if (shutdownScenario === 'open-external-fail') {
-              return { response: 0, checkboxChecked: false };
+              if (seenDialogTitles.length <= 2) return { response: 0, checkboxChecked: false };
+              return { response: 3, checkboxChecked: false };
             }
             return { response: 1, checkboxChecked: false };
           },
@@ -1650,6 +1658,7 @@ async function run(): Promise<void> {
           text.includes('flo-db-health-probe-') ||
           text.includes('flo-recovery-verify-') ||
           text.includes('flo-backup-discover-') ||
+          text.includes('wincafe-backup-discover-') ||
           text.includes('flo-restore-source-')
         );
       };
@@ -2718,7 +2727,7 @@ async function run(): Promise<void> {
           restoreCompatibleBackupForDowngrade(hotCompatibleBackupPath, {
             newerDbVersion,
           }),
-        /rollback journal[\s\S]*update Flo Cafe/i,
+        /rollback journal[\s\S]*update WinCafe/i,
         'downgrade restore refuses active hot rollback journal with actionable update guidance',
       );
       assert.equal(

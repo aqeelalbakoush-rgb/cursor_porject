@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import type { Request, Response, NextFunction } from 'express';
 import * as path from 'path';
+import { WINCAFE_DB_FILENAME, WINCAFE_DB_INITIALIZED_MARKER } from './wincafe-profile';
 import * as os from 'os';
 import { app } from 'electron';
 import log from 'electron-log';
@@ -102,7 +103,7 @@ function createDatabaseMissingError(dbPath: string): Error & { code: string } {
   const error = new Error(
     `Database file is missing at ${dbPath}, but this install was previously initialized. ` +
       'Refusing to start with a new, empty database to avoid silently losing existing data. ' +
-      'Restore from a backup (Settings → Backup & Restore, or the backups folder) and restart Flo Cafe.',
+      'Restore from a backup (Settings → Backup & Restore, or the backups folder) and restart WinCafe.',
   ) as Error & { code: string };
   error.code = 'ERR_DATABASE_MISSING';
   return error;
@@ -617,7 +618,7 @@ export function getDbPath(): string {
       ? path.resolve(__dirname, '../..')
       : path.resolve(__dirname, '..');
   const userDataPath = app.isPackaged ? app.getPath('userData') : projectRoot;
-  return path.join(userDataPath, 'flo.db');
+  return path.join(userDataPath, WINCAFE_DB_FILENAME);
 }
 
 export function getBackupDir(): string {
@@ -628,7 +629,7 @@ export function getBackupDir(): string {
 // Marker written on first startup to distinguish empty fresh install from missing db file.
 function getDbInitializedMarkerPath(): string {
   const userDataPath = app.getPath('userData');
-  return path.join(userDataPath, '.flo-db-initialized');
+  return path.join(userDataPath, WINCAFE_DB_INITIALIZED_MARKER);
 }
 
 type ReplacementJournalSidecar = '-wal' | '-shm';
@@ -1898,13 +1899,16 @@ export function isHealthyDatabaseFile(
 
 export const MAX_RETAINED_RESTORE_SAFETY_COPIES = 3;
 
+/** New backups use wincafe-backup-. flo-backup- remains readable inside the WinCafe folder. */
+const MANAGED_BACKUP_NAME = /^(?:wincafe-backup-|flo-backup-).+\.db$/;
+
+export function isManagedBackupName(fileName: string): boolean {
+  return MANAGED_BACKUP_NAME.test(fileName);
+}
+
 /** True for the retained copies a successful restore leaves behind as an undo. */
 export function isRestoreSafetyCopyName(fileName: string): boolean {
-  return (
-    fileName.startsWith('flo-backup-') &&
-    fileName.includes('-pre-restore-') &&
-    fileName.endsWith('.db')
-  );
+  return isManagedBackupName(fileName) && fileName.includes('-pre-restore-');
 }
 
 /**
@@ -1925,7 +1929,7 @@ export function retainRestoreSafetyCopy(
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const retainedPath = path.join(
     getBackupDir(),
-    `flo-backup-${timestamp}-pre-restore-v${schemaVersion}.db`,
+    `wincafe-backup-${timestamp}-pre-restore-v${schemaVersion}.db`,
   );
   try {
     if (!pathEntryExists(recoveryPath)) return null;
@@ -2456,7 +2460,7 @@ function initializeDatabase(
       } catch (retryErr) {
         console.error('[DB] Failed to write init marker after retry:', retryErr);
         log.error(
-          '[DB] Failed to write .flo-db-initialized marker after retry — the #278 ' +
+          '[DB] Failed to write .wincafe-db-initialized marker after retry — the #278 ' +
             'missing-database guard will not protect this install until a future boot succeeds:',
           retryErr,
         );
@@ -2809,7 +2813,7 @@ export function autoRepairSchemaDrift(): void {
     fs.mkdirSync(backupDir, { recursive: true });
     const snapshotPath = path.join(
       backupDir,
-      `flo-backup-${new Date().toISOString().replace(/[:.]/g, '-')}-pre-v${version}-schema-repair.db`,
+      `wincafe-backup-${new Date().toISOString().replace(/[:.]/g, '-')}-pre-v${version}-schema-repair.db`,
     );
     try {
       db.exec(`VACUUM INTO '${snapshotPath.replace(/'/g, "''")}'`);
@@ -2980,7 +2984,7 @@ export async function createBackupUnlocked(
   const uniqueSuffix = crypto.randomBytes(4).toString('hex');
   const backupDir = getBackupDir();
   const stagingDir = options?.stagingDirectory ? path.resolve(options.stagingDirectory) : backupDir;
-  const tempPath = path.join(stagingDir, `flo-backup-${timestamp}-${uniqueSuffix}.db`);
+  const tempPath = path.join(stagingDir, `wincafe-backup-${timestamp}-${uniqueSuffix}.db`);
   const finalPath = targetPath ? path.resolve(targetPath) : tempPath;
   const stagedTargetPath =
     finalPath !== tempPath
@@ -3600,7 +3604,7 @@ export function listBackupsPage(options: BackupPaginationOptions = {}): BackupPa
 
   let candidates = fs
     .readdirSync(backupDir)
-    .filter((fileName) => fileName.startsWith('flo-backup-') && fileName.endsWith('.db'))
+    .filter((fileName) => isManagedBackupName(fileName))
     .map((fileName) => ({ fileName, fullPath: resolveContainedPath(backupDir, fileName) }))
     .filter((entry): entry is { fileName: string; fullPath: string } => {
       if (!entry.fullPath) return false;
@@ -3668,7 +3672,7 @@ export function deleteBackup(fileName: string): void {
     error.code = 'ERR_INVALID_BACKUP_NAME';
     return error;
   };
-  if (!/^flo-backup-[\w.-]+\.db$/.test(fileName)) {
+  if (!/^(?:wincafe|flo)-backup-[\w.-]+\.db$/.test(fileName)) {
     throw invalidName();
   }
   const backupDir = getBackupDir();
@@ -3697,7 +3701,7 @@ export function isManagedBackupFile(candidatePath: string): boolean {
   }
   if (!resolved.startsWith(backupDir + path.sep)) return false;
   const fileName = path.basename(resolved);
-  if (!fileName.startsWith('flo-backup-') || !fileName.endsWith('.db')) return false;
+  if (!isManagedBackupName(fileName)) return false;
   try {
     return fs.statSync(resolved).isFile();
   } catch {
@@ -3939,7 +3943,7 @@ function inspectOpenBackupDatabaseForDowngrade(
       status: 'corrupt_or_invalid',
       schemaVersion: null,
       appVersion: null,
-      detail: 'Backup does not contain an initialized Flo Cafe schema',
+      detail: 'Backup does not contain an initialized WinCafe schema',
     };
   }
 
@@ -3959,7 +3963,7 @@ function inspectOpenBackupDatabaseForDowngrade(
       status: 'corrupt_or_invalid',
       schemaVersion: pragmaVersion,
       appVersion,
-      detail: `Backup is missing required Flo Cafe table(s): ${missingCoreTables.join(', ')}`,
+      detail: `Backup is missing required WinCafe table(s): ${missingCoreTables.join(', ')}`,
     };
   }
 
@@ -4246,7 +4250,7 @@ function evaluateDowngradeBackupCandidate(
         fullPath,
         [],
         {
-          tmpPrefix: 'flo-backup-discover-',
+          tmpPrefix: 'wincafe-backup-discover-',
           fallbackSubprefix: 'discover-',
           targetFileName: 'candidate.db',
           purposeLabel: 'backup candidate for discovery',
@@ -4454,7 +4458,7 @@ export function restoreCompatibleBackupForDowngrade(
         throw new Error(
           `Active SQLite rollback journal detected (${activeRollbackJournalPath}). ` +
             `Refusing backup restore so uncommitted newer-database recovery state is not lost or replayed. ` +
-            `Update Flo Cafe to the latest compatible version to recover the database cleanly before restoring.`,
+            `Update WinCafe to the latest compatible version to recover the database cleanly before restoring.`,
         );
       }
     };
@@ -4466,7 +4470,7 @@ export function restoreCompatibleBackupForDowngrade(
       const inspection = inspectBackupSnapshotForDowngrade(stagedSource.snapshotPath, maxSupported);
       if (inspection.status === 'incompatible_newer') {
         throw new Error(
-          `Selected backup cannot be restored: ${inspection.detail}. Update Flo Cafe or choose an older compatible backup.`,
+          `Selected backup cannot be restored: ${inspection.detail}. Update WinCafe or choose an older compatible backup.`,
         );
       }
       if (inspection.status !== 'compatible') {
@@ -6348,7 +6352,7 @@ export function restoreBackup(
         backupSchemaVersion,
         currentSchemaVersion: currentVersion,
         tablesRestored: 0,
-        error: 'Backup does not contain an initialized Flo Cafe schema',
+        error: 'Backup does not contain an initialized WinCafe schema',
       };
     }
 
@@ -6394,7 +6398,7 @@ export function restoreBackup(
             backupSchemaVersion,
             currentSchemaVersion: currentVersion,
             tablesRestored: 0,
-            error: `Backup is missing required Flo Cafe table(s): ${missingCoreTables.join(', ')}`,
+            error: `Backup is missing required WinCafe table(s): ${missingCoreTables.join(', ')}`,
           };
         }
         if (backupSchemaVersion >= 85 && !stagedTables.has('inventory_movements')) {
@@ -10425,7 +10429,7 @@ function syncBackupBeforeMigration(fromVersion: number, toVersion: number): void
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     targetPath = path.join(
       backupDir,
-      `flo-backup-${timestamp}-pre-v${fromVersion}-to-v${toVersion}.db`,
+      `wincafe-backup-${timestamp}-pre-v${fromVersion}-to-v${toVersion}.db`,
     );
 
     if (fs.existsSync(dbPath)) {
@@ -10499,7 +10503,7 @@ export class SchemaVersionMismatchError extends Error {
     super(
       `Database schema (v${dbVersion}) is newer than this app version supports (v${appVersion}). ` +
         `This usually means another device or a previous update already upgraded this database. ` +
-        `Please update Flo Cafe to the latest version before continuing.`,
+        `Please update WinCafe to the latest version before continuing.`,
     );
     this.name = 'SchemaVersionMismatchError';
   }
