@@ -1,6 +1,6 @@
 import path from 'path';
 
-/** Electron and NSIS identity. Distinct from FloCafe (`com.flopos.desktop` / `flo-desktop`). */
+/** Electron and NSIS identity. Distinct from FloCafe (`com.flo.desktop`). */
 export const WINCAFE_APP_ID = 'com.wintech.wincafe';
 export const WINCAFE_PRODUCT_NAME = 'WinCafe';
 
@@ -12,15 +12,15 @@ export const WINCAFE_USER_DATA_DIR_NAME = 'WinCafe';
 export const WINCAFE_DB_FILENAME = 'wincafe.db';
 export const WINCAFE_DB_INITIALIZED_MARKER = '.wincafe-db-initialized';
 
-/** FloCafe profile names this app must never open or create. */
+/** Directory names FloCafe uses for its own profile. */
 const FLOCAFE_DATA_DIR_NAMES = new Set(['flo-desktop', 'Flo Cafe', 'FloCafe']);
 
+export function isFloCafeDataDirectory(dir: string): boolean {
+  return FLOCAFE_DATA_DIR_NAMES.has(path.basename(path.resolve(dir)));
+}
+
 export function wincafeUserDataPath(appDataDir: string): string {
-  const userData = path.join(path.resolve(appDataDir), WINCAFE_USER_DATA_DIR_NAME);
-  if (FLOCAFE_DATA_DIR_NAMES.has(path.basename(userData))) {
-    throw new Error('WinCafe user data must not use a FloCafe directory');
-  }
-  return userData;
+  return path.join(path.resolve(appDataDir), WINCAFE_USER_DATA_DIR_NAME);
 }
 
 /** Daily backups outside the profile. Never `Documents/FloCafe`. */

@@ -97,7 +97,7 @@ async function runTests() {
 
       fs.unlinkSync = function (targetFile: fs.PathLike) {
         const filePath = String(targetFile);
-        if (filePath.includes('flo-backup-')) {
+        if (filePath.includes('flo-backup-') || filePath.includes('wincafe-backup-')) {
           unlinkAttempted = true;
           const err: any = new Error('resource busy or locked');
           err.code = 'EBUSY';
@@ -137,7 +137,7 @@ async function runTests() {
 
       fs.unlinkSync = function (targetFile: fs.PathLike) {
         const filePath = String(targetFile);
-        if (filePath.includes('flo-backup-')) {
+        if (filePath.includes('flo-backup-') || filePath.includes('wincafe-backup-')) {
           unlinkAttempted = true;
           const err: any = new Error('operation not permitted');
           err.code = 'EPERM';
@@ -183,7 +183,7 @@ async function runTests() {
 
       fs.unlinkSync = function (targetFile: fs.PathLike) {
         const filePath = String(targetFile);
-        if (filePath.includes('flo-backup-')) {
+        if (filePath.includes('flo-backup-') || filePath.includes('wincafe-backup-')) {
           const err: any = new Error('resource busy or locked');
           err.code = 'EBUSY';
           throw err;
@@ -211,7 +211,7 @@ async function runTests() {
 
       fs.unlinkSync = function (targetFile: fs.PathLike) {
         const filePath = String(targetFile);
-        if (filePath.includes('flo-backup-')) {
+        if (filePath.includes('flo-backup-') || filePath.includes('wincafe-backup-')) {
           const err: any = new Error('I/O error');
           err.code = 'EIO';
           throw err;
@@ -235,7 +235,10 @@ async function runTests() {
       setPlatform('win32');
       fs.unlinkSync = function (targetFile: fs.PathLike) {
         const filePath = String(targetFile);
-        if (filePath.includes('flo-backup-') && !filePath.endsWith('.tmp')) {
+        if (
+          (filePath.includes('flo-backup-') || filePath.includes('wincafe-backup-')) &&
+          !filePath.endsWith('.tmp')
+        ) {
           const err: any = new Error('resource busy or locked');
           err.code = 'EBUSY';
           throw err;

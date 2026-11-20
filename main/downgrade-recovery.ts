@@ -9,8 +9,6 @@ import type {
   SchemaVersionMismatchError,
 } from './db';
 
-export const FLOCAFE_RELEASES_URL = 'https://github.com/FreeOpenSourcePOS/FloCafe/releases';
-
 const BACKUP_PAGE_SIZE = 5;
 
 export interface DowngradeRecoveryLogger {
@@ -37,7 +35,6 @@ export interface DowngradeRecoveryDeps {
 
 export type DowngradeRecoveryOutcome =
   | { outcome: 'exit' }
-  | { outcome: 'opened_releases'; url: string }
   | { outcome: 'restored'; result: DowngradeRestoreResult };
 
 function formatKindLabel(kind: CompatibleDowngradeBackup['kind']): string {
@@ -121,26 +118,19 @@ function isShutdownAbortError(error: unknown): boolean {
   return false;
 }
 
-async function openReleasesPage(deps: DowngradeRecoveryDeps): Promise<boolean> {
-  try {
-    await deps.shell.openExternal(FLOCAFE_RELEASES_URL);
-    return true;
-  } catch (error: unknown) {
-    if (deps.isShutdownRequested() || isShutdownAbortError(error)) return false;
-    deps.log.error('[Recovery] Failed to open WinCafe releases page:', error);
-    const errorMessage = error instanceof Error ? error.message : 'unknown error';
-    await deps.dialog.showMessageBox({
-      type: 'error',
-      title: 'Cannot Open Download Page',
-      message: 'Could not open the WinCafe releases page in your browser.',
-      detail: `Open this address manually to download the latest WinCafe release:\n${FLOCAFE_RELEASES_URL}\n\nError: ${errorMessage}`,
-      buttons: ['OK'],
-      defaultId: 0,
-      cancelId: 0,
-      noLink: true,
-    });
-    return false;
-  }
+async function explainNoUpdateDownload(deps: DowngradeRecoveryDeps): Promise<void> {
+  if (deps.isShutdownRequested()) return;
+  await deps.dialog.showMessageBox({
+    type: 'info',
+    title: 'Update Download Unavailable',
+    message: 'WinCafe does not have an update download page configured.',
+    detail:
+      'Install a newer WinCafe build from the installer you already use, or restore a compatible backup from this screen. No files were changed.',
+    buttons: ['OK'],
+    defaultId: 0,
+    cancelId: 0,
+    noLink: true,
+  });
 }
 
 async function revealBackupsFolder(deps: DowngradeRecoveryDeps): Promise<void> {
@@ -306,7 +296,7 @@ export async function runDowngradeRecoveryFlow(
       'Opening a newer database with an older version of WinCafe is blocked so your data is never altered or lost.',
       '',
       'Choose how to continue:',
-      '- Get Latest Version: download and install the latest WinCafe release (recommended).',
+      '- Get Latest Version: see how to install a newer WinCafe build (recommended).',
       '- Open Backups Folder: view your local backups in the file manager.',
       '- Restore Compatible Backup: restore an earlier compatible backup and preserve the newer database aside.',
       '- Exit: close WinCafe safely without changing any files.',
@@ -326,9 +316,8 @@ export async function runDowngradeRecoveryFlow(
     if (deps.isShutdownRequested()) return { outcome: 'exit' };
 
     if (mainChoice.response === 0) {
-      const opened = await openReleasesPage(deps);
+      await explainNoUpdateDownload(deps);
       if (deps.isShutdownRequested()) return { outcome: 'exit' };
-      if (opened) return { outcome: 'opened_releases', url: FLOCAFE_RELEASES_URL };
       continue;
     }
 
@@ -372,9 +361,8 @@ export async function runDowngradeRecoveryFlow(
 
         if (deps.isShutdownRequested()) return { outcome: 'exit' };
         if (emptyChoice.response === 0) {
-          const opened = await openReleasesPage(deps);
+          await explainNoUpdateDownload(deps);
           if (deps.isShutdownRequested()) return { outcome: 'exit' };
-          if (opened) return { outcome: 'opened_releases', url: FLOCAFE_RELEASES_URL };
           continue;
         }
         if (emptyChoice.response === 1) {

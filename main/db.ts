@@ -1899,13 +1899,16 @@ export function isHealthyDatabaseFile(
 
 export const MAX_RETAINED_RESTORE_SAFETY_COPIES = 3;
 
+/** New backups use wincafe-backup-. flo-backup- remains readable inside the WinCafe folder. */
+const MANAGED_BACKUP_NAME = /^(?:wincafe-backup-|flo-backup-).+\.db$/;
+
+export function isManagedBackupName(fileName: string): boolean {
+  return MANAGED_BACKUP_NAME.test(fileName);
+}
+
 /** True for the retained copies a successful restore leaves behind as an undo. */
 export function isRestoreSafetyCopyName(fileName: string): boolean {
-  return (
-    fileName.startsWith('flo-backup-') &&
-    fileName.includes('-pre-restore-') &&
-    fileName.endsWith('.db')
-  );
+  return isManagedBackupName(fileName) && fileName.includes('-pre-restore-');
 }
 
 /**
@@ -1926,7 +1929,7 @@ export function retainRestoreSafetyCopy(
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const retainedPath = path.join(
     getBackupDir(),
-    `flo-backup-${timestamp}-pre-restore-v${schemaVersion}.db`,
+    `wincafe-backup-${timestamp}-pre-restore-v${schemaVersion}.db`,
   );
   try {
     if (!pathEntryExists(recoveryPath)) return null;
@@ -2810,7 +2813,7 @@ export function autoRepairSchemaDrift(): void {
     fs.mkdirSync(backupDir, { recursive: true });
     const snapshotPath = path.join(
       backupDir,
-      `flo-backup-${new Date().toISOString().replace(/[:.]/g, '-')}-pre-v${version}-schema-repair.db`,
+      `wincafe-backup-${new Date().toISOString().replace(/[:.]/g, '-')}-pre-v${version}-schema-repair.db`,
     );
     try {
       db.exec(`VACUUM INTO '${snapshotPath.replace(/'/g, "''")}'`);
@@ -2981,7 +2984,7 @@ export async function createBackupUnlocked(
   const uniqueSuffix = crypto.randomBytes(4).toString('hex');
   const backupDir = getBackupDir();
   const stagingDir = options?.stagingDirectory ? path.resolve(options.stagingDirectory) : backupDir;
-  const tempPath = path.join(stagingDir, `flo-backup-${timestamp}-${uniqueSuffix}.db`);
+  const tempPath = path.join(stagingDir, `wincafe-backup-${timestamp}-${uniqueSuffix}.db`);
   const finalPath = targetPath ? path.resolve(targetPath) : tempPath;
   const stagedTargetPath =
     finalPath !== tempPath
@@ -3601,7 +3604,7 @@ export function listBackupsPage(options: BackupPaginationOptions = {}): BackupPa
 
   let candidates = fs
     .readdirSync(backupDir)
-    .filter((fileName) => fileName.startsWith('flo-backup-') && fileName.endsWith('.db'))
+    .filter((fileName) => isManagedBackupName(fileName))
     .map((fileName) => ({ fileName, fullPath: resolveContainedPath(backupDir, fileName) }))
     .filter((entry): entry is { fileName: string; fullPath: string } => {
       if (!entry.fullPath) return false;
@@ -3669,7 +3672,7 @@ export function deleteBackup(fileName: string): void {
     error.code = 'ERR_INVALID_BACKUP_NAME';
     return error;
   };
-  if (!/^flo-backup-[\w.-]+\.db$/.test(fileName)) {
+  if (!/^(?:wincafe|flo)-backup-[\w.-]+\.db$/.test(fileName)) {
     throw invalidName();
   }
   const backupDir = getBackupDir();
@@ -3698,7 +3701,7 @@ export function isManagedBackupFile(candidatePath: string): boolean {
   }
   if (!resolved.startsWith(backupDir + path.sep)) return false;
   const fileName = path.basename(resolved);
-  if (!fileName.startsWith('flo-backup-') || !fileName.endsWith('.db')) return false;
+  if (!isManagedBackupName(fileName)) return false;
   try {
     return fs.statSync(resolved).isFile();
   } catch {
@@ -4247,7 +4250,7 @@ function evaluateDowngradeBackupCandidate(
         fullPath,
         [],
         {
-          tmpPrefix: 'flo-backup-discover-',
+          tmpPrefix: 'wincafe-backup-discover-',
           fallbackSubprefix: 'discover-',
           targetFileName: 'candidate.db',
           purposeLabel: 'backup candidate for discovery',
@@ -10426,7 +10429,7 @@ function syncBackupBeforeMigration(fromVersion: number, toVersion: number): void
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     targetPath = path.join(
       backupDir,
-      `flo-backup-${timestamp}-pre-v${fromVersion}-to-v${toVersion}.db`,
+      `wincafe-backup-${timestamp}-pre-v${fromVersion}-to-v${toVersion}.db`,
     );
 
     if (fs.existsSync(dbPath)) {

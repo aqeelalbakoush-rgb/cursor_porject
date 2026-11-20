@@ -474,13 +474,7 @@
       "node_modules/**/*",
       "!**/better-sqlite3/build/Release/test_extension.node"
     ],
-    "publish": {
-      "provider": "github",
-      "owner": "FreeOpenSourcePOS",
-      "repo": "FloCafe",
-      "releaseType": "release",
-      "channel": "latest"
-    },
+    "publish": null,
     "detectUpdateChannel": false,
     "generateUpdatesFilesForAllChannels": true,
     "extraResources": [
@@ -516,8 +510,8 @@
       "applicationId": "WinCafe",
       "backgroundColor": "#0f766e",
       "publisherDisplayName": "WinTech",
-      "identityName": "CodifyAppsPrivateLimited.FloCafe",
-      "publisher": "CN=34AFD24D-EC88-44B8-B309-08BB8A6BB5F7",
+      "identityName": "WinTech.WinCafe",
+      "publisher": "CN=WinTech",
       "displayName": "WinCafe",
       "languages": [
         "en-US"
@@ -629,8 +623,8 @@
       "artifactName": "wincafe-${version}-linux.${ext}",
       "extraFiles": [
         {
-          "from": "assets/com.flo.desktop.metainfo.xml",
-          "to": "usr/share/metainfo/com.flo.desktop.metainfo.xml"
+          "from": "assets/com.wintech.wincafe.metainfo.xml",
+          "to": "usr/share/metainfo/com.wintech.wincafe.metainfo.xml"
         },
         {
           "from": "assets/icons",
@@ -643,7 +637,7 @@
           "Comment": "WinCafe by WinTech, an offline-first POS for cafes and restaurants",
           "GenericName": "Point of Sale",
           "Keywords": "pos;point of sale;restaurant;cafe;billing;invoice;",
-          "StartupWMClass": "flo-desktop"
+          "StartupWMClass": "WinCafe"
         }
       }
     },

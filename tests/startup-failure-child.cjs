@@ -151,7 +151,8 @@ Module._load = function (request, parent, isMain) {
             return { response: 3 };
           }
           if (newerDbMode === 'update') {
-            return { response: 0 };
+            if (messageBoxCalls <= 2) return { response: 0 };
+            return { response: 3 };
           }
           if (
             newerDbMode === 'restore' ||
@@ -467,7 +468,8 @@ setTimeout(
         'database.init',
         'database.close',
         'dialog.showMessageBox:Newer Database Detected',
-        'shell.openExternal',
+        'dialog.showMessageBox:Update Download Unavailable',
+        'dialog.showMessageBox:Newer Database Detected',
         'server-app.stop',
         'server.stop',
         'kds.stop',
@@ -480,6 +482,7 @@ setTimeout(
       ];
       passed =
         expectedUpdateOrder.every((event, index) => events[index] === event) &&
+        !events.includes('shell.openExternal') &&
         !events.includes('app.relaunch') &&
         !events.includes('dialog.showErrorBox') &&
         !events.includes('diagnostics.capture') &&

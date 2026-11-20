@@ -6,7 +6,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$ROOT_DIR"
 
 if [ ! -f "$ROOT_DIR/package.json" ]; then
-  echo "Error: nuclear-reset.sh must run from a FloCafe checkout." >&2
+  echo "Error: nuclear-reset.sh must run from a WinCafe checkout." >&2
   exit 1
 fi
 
@@ -120,7 +120,7 @@ fi
 
 if [ "$CONFIRMED" = "false" ]; then
   if [ -t 0 ]; then
-    read -p "WARNING: This will stop Flo processes, clear build/app caches, and rebuild. Continue? (y/N) " -n 1 -r
+    read -p "WARNING: This will stop WinCafe processes, clear build/app caches, and rebuild. Continue? (y/N) " -n 1 -r
     echo ""
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
       echo "Nuclear reset cancelled."
@@ -133,21 +133,21 @@ if [ "$CONFIRMED" = "false" ]; then
 fi
 
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}    FloCafe - Development Reset         ${NC}"
+echo -e "${BLUE}    WinCafe - Development Reset         ${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 
-echo -e "${BLUE}Step 1: Killing Flo processes${NC}"
+echo -e "${BLUE}Step 1: Killing WinCafe processes${NC}"
 echo "----------------------------------------"
 
 if [ "$DRY_RUN" = "true" ]; then
-  echo -e "${YELLOW}Dry run: would stop Flo processes on ports 3000, 3001, 3002, 3003, 3088${NC}"
+  echo -e "${YELLOW}Dry run: would stop WinCafe processes on ports 3000, 3001, 3002, 3003, 3088${NC}"
 elif [ "$CACHE_ONLY" = "true" ]; then
   echo -e "${YELLOW}Cache-only mode: process stop skipped${NC}"
 else
   node kill-ports.js 3000 3001 3002 3003 3088
   sleep 1
-  echo -e "${GREEN}Flo processes stopped${NC}"
+  echo -e "${GREEN}WinCafe processes stopped${NC}"
 fi
 
 echo ""

@@ -107,7 +107,7 @@ async function main(): Promise<void> {
   }
 
   const stamp = new Date('2026-10-22T13:05:09.456Z');
-  assert.equal(localBackupFileName(stamp), 'flo-backup-2026-10-22T13-05-09-456Z.db');
+  assert.equal(localBackupFileName(stamp), 'wincafe-backup-2026-10-22T13-05-09-456Z.db');
   assert.equal(
     parseLocalBackupTime(localBackupFileName(stamp)),
     Date.UTC(2026, 9, 22, 13, 5, 9, 456),

@@ -228,11 +228,7 @@ function run() {
     ['latest.yml', 'latest-mac.yml', 'latest-linux.yml', 'latest-linux-arm64.yml'],
     'draft release verification must require both Linux architecture manifests',
   );
-  assert.equal(
-    build?.publish?.channel,
-    'latest',
-    'stable builds must default to the latest update channel',
-  );
+  assert.equal(build?.publish, null, 'build.publish must not point at a release feed');
   assert.equal(
     build?.detectUpdateChannel,
     false,
@@ -243,7 +239,7 @@ function run() {
     true,
     'electron-builder must support channel update manifests',
   );
-  assert.equal(build?.publish?.provider, 'github', 'build.publish must target GitHub releases');
+  assert.equal(build?.publish ?? null, null, 'build.publish must stay unset until a WinTech feed exists');
 
   const macTargets = (build?.mac?.target || []).map((target: any) => target.target);
   assert.ok(macTargets.includes('zip'), 'mac build target must include zip for electron-updater');
@@ -1483,7 +1479,7 @@ cat "$CI_TEST_RUNS_FIXTURE"
   assert.ok(evidenceUpload, 'CI must upload release regression evidence');
   assert.equal(evidenceUpload.with.path, '${{ runner.temp }}/flocafe-release-regressions/');
 
-  const metaFilePath = path.join(__dirname, '../assets/com.flo.desktop.metainfo.xml');
+  const metaFilePath = path.join(__dirname, '../assets/com.wintech.wincafe.metainfo.xml');
   const originalMetaContent = fs.readFileSync(metaFilePath, 'utf8');
   const testNotesPath = path.join(os.tmpdir(), `flocafe-release-notes-${Date.now()}.md`);
   try {

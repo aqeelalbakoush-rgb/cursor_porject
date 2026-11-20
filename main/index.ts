@@ -15,6 +15,7 @@ import * as fs from 'fs';
 import {
   WINCAFE_APP_ID,
   WINCAFE_PRODUCT_NAME,
+  isFloCafeDataDirectory,
   wincafeUserDataPath,
 } from './wincafe-profile';
 
@@ -39,6 +40,7 @@ import {
 import { runDowngradeRecoveryFlow } from './downgrade-recovery';
 import {
   BETA_CHANNEL_SETTING_KEY,
+  hasWinTechUpdateFeed,
   parseStoredBetaChannelEnabled,
   resolveUpdateChannel,
 } from './update-channel';
@@ -163,13 +165,6 @@ const isMsixBuild =
 // Either store build: skip third-party auto-updater entirely.
 const isStoreBuild = isMasBuild || isMsixBuild;
 const UNPACKED_DEV_MARKER = 'flo-unpacked-dev.marker';
-
-log.initialize();
-log.transports.file.level = 'info';
-log.transports.console.level = 'debug';
-// electron-log's default rotation (~1MB, one archived copy) already bounds disk usage.
-const logPath = log.transports.file.getFile().path.replace(/[^\/\\]+$/, '');
-console.log('[Log] Log files location:', logPath);
 
 // Persisted update state: transitions are routed here for status recovery.
 let storedUpdateStatus: StoredUpdateStatus = initialUpdateState();
@@ -367,6 +362,10 @@ function setupAutoUpdater(): void {
 }
 
 function checkForUpdates(): void {
+  if (!hasWinTechUpdateFeed()) {
+    log.info('[Update] No WinTech update feed is configured; not checking for releases');
+    return;
+  }
   const { phoneHomeEnabled } =
     require('../shared/phone-home') as typeof import('../shared/phone-home');
   let phoneHomeSetting: string | null = null;
@@ -813,16 +812,27 @@ let gotSingleInstanceLock = false;
 
 // Own profile and single-instance lock. Must run before app.ready, and must
 // not open FloCafe's flo-desktop / Flo Cafe directories. E2E may point at a
-// disposable directory; that override is never a FloCafe install path.
+// disposable directory; that override is rejected when it names a FloCafe folder.
+app.setName(WINCAFE_PRODUCT_NAME);
 if (process.env.FLO_E2E_USER_DATA_DIR) {
-  app.setPath('userData', path.resolve(process.env.FLO_E2E_USER_DATA_DIR));
+  const override = path.resolve(process.env.FLO_E2E_USER_DATA_DIR);
+  if (isFloCafeDataDirectory(override)) {
+    throw new Error('FLO_E2E_USER_DATA_DIR must not point at a FloCafe data directory');
+  }
+  app.setPath('userData', override);
 } else {
-  app.setName(WINCAFE_PRODUCT_NAME);
   app.setPath('userData', wincafeUserDataPath(app.getPath('appData')));
   if (process.platform === 'win32') {
     app.setAppUserModelId(WINCAFE_APP_ID);
   }
 }
+
+log.initialize();
+log.transports.file.level = 'info';
+log.transports.console.level = 'debug';
+// electron-log's default rotation (~1MB, one archived copy) already bounds disk usage.
+const logPath = log.transports.file.getFile().path.replace(/[^\/\\]+$/, '');
+console.log('[Log] Log files location:', logPath);
 
 gotSingleInstanceLock = app.requestSingleInstanceLock();
 if (!gotSingleInstanceLock) {

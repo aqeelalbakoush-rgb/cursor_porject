@@ -1,5 +1,15 @@
 /** Resolves updater channel based on running version and beta opt-in settings. */
 
+/**
+ * The only release feed electron-updater may contact. Null until WinTech
+ * publishes one. A null feed must never fall back to FloCafe's GitHub releases.
+ */
+export const WINTECH_UPDATE_FEED: { readonly owner: string; readonly repo: string } | null = null;
+
+export function hasWinTechUpdateFeed(): boolean {
+  return WINTECH_UPDATE_FEED !== null;
+}
+
 /** Setting key persisting the in-app beta channel opt-in. */
 export const BETA_CHANNEL_SETTING_KEY = 'updates.beta_channel_enabled';
 
